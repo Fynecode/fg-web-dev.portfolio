@@ -18,7 +18,31 @@
             }
 
             const formData = new FormData();
-            formData.append("title", title.value);
+            const normalized = {
+                title: title.value,
+                description: null,
+                company: null,
+                link: null,
+                challenges: null,
+                solution: null,
+                status: "draft",
+                scope: [],
+                tags: [],
+                deliveredFeats: [],
+                feedback: null,
+                file: null,
+                picture: null
+            };
+
+            Object.entries(normalized).forEach(([key, value]) => {
+                if (Array.isArray(value)) {
+                    formData.append(key, JSON.stringify(value));
+                } else if (value === null) {
+                    formData.append(key, "null");
+                } else {
+                    formData.append(key, value);
+                }
+            });
 
             await props.createProject(formData)
 

@@ -598,21 +598,37 @@ function onPictureUpload(e) {
 // Save project updates
 async function saveChanges() {
   try {
+    const normalized = {
+      title: form.title ?? null,
+      description: form.description ?? null,
+      company: form.company ?? null,
+      link: form.link ?? null,
+      challenges: form.challenges ?? null,
+      solution: form.solution ?? null,
+      status: form.status ?? null,
+      scope: Array.isArray(form.scope) ? form.scope : [],
+      tags: Array.isArray(form.tags) ? form.tags : [],
+      deliveredFeats: Array.isArray(form.deliveredFeats) ? form.deliveredFeats : [],
+      feedback: form.testimonial?.feedback ?? null,
+      file: form.file ?? null,
+      picture: form.testimonial?.pictureUrl ?? null
+    };
+
     const fd = new FormData();
 
-    fd.append("title", form.title)
-    fd.append("description", form.description)
-    fd.append("company", form.company)
-    fd.append("scope", form.scope)
-    fd.append("tags", form.tags)
-    fd.append("deliveredFeats", form.deliveredFeats)
-    fd.append("challenges", form.challenges)
-    fd.append("solution", form.solution)
-    fd.append("status", form.status)
-    fd.append("link", form.link)
-    fd.append("file", form.file)
-    fd.append("picture", form.testimonial.pictureUrl)
-    fd.append("feedback", form.testimonial.feedback)
+    fd.append("title", normalized.title)
+    fd.append("description", normalized.description)
+    fd.append("company", normalized.company)
+    fd.append("scope", JSON.stringify(normalized.scope))
+    fd.append("tags", JSON.stringify(normalized.tags))
+    fd.append("deliveredFeats", JSON.stringify(normalized.deliveredFeats))
+    fd.append("challenges", normalized.challenges)
+    fd.append("solution", normalized.solution)
+    fd.append("status", normalized.status)
+    fd.append("link", normalized.link)
+    fd.append("file", normalized.file)
+    fd.append("picture", normalized.picture)
+    fd.append("feedback", normalized.feedback)
 
     await featuredStore.updateFeaturedProject(id.value, fd);
 
@@ -646,7 +662,31 @@ onMounted(async () => {
   if (!project.value) return;
 
   // Copy project into editable form
-  Object.assign(form, JSON.parse(JSON.stringify(project.value)));
+  const cloned = JSON.parse(JSON.stringify(project.value));
+  const toArray = (val) => {
+    if (Array.isArray(val)) return val;
+    if (val === null || val === undefined || val === 'null' || val === '') return [];
+    if (typeof val === 'string') {
+      const trimmed = val.trim();
+      if (!trimmed) return [];
+      if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+      return trimmed.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    return [];
+  };
+
+  cloned.scope = toArray(cloned.scope);
+  cloned.tags = toArray(cloned.tags);
+  cloned.deliveredFeats = toArray(cloned.deliveredFeats);
+
+  Object.assign(form, cloned);
   // Testimonial fields
   if (project.value.testimonial) {
     form.testimonial.feedback = project.value.testimonial.feedback || "";

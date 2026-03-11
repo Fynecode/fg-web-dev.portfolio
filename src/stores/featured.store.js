@@ -14,6 +14,38 @@ export const useFeaturedProjectsStore = defineStore('featuredProjects', {
   }),
 
   actions: {
+    normalizeProject(project) {
+      if (!project) return project
+      const toArray = (val) => {
+        if (Array.isArray(val)) return val
+        if (val === null || val === undefined || val === 'null' || val === '') return []
+        if (typeof val === 'string') {
+          const trimmed = val.trim()
+          if (!trimmed) return []
+          if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+            try {
+              const parsed = JSON.parse(trimmed)
+              return Array.isArray(parsed) ? parsed : []
+            } catch {
+              return []
+            }
+          }
+          return trimmed.split(',').map(s => s.trim()).filter(Boolean)
+        }
+        return []
+      }
+
+      return {
+        ...project,
+        scope: toArray(project.scope),
+        tags: toArray(project.tags),
+        deliveredFeats: toArray(project.deliveredFeats),
+      }
+    },
+
+    normalizeList(list) {
+      return Array.isArray(list) ? list.map(p => this.normalizeProject(p)) : []
+    },
     // GENERIC HELPERS
     safeParse(key) {
       try {
@@ -65,14 +97,14 @@ export const useFeaturedProjectsStore = defineStore('featuredProjects', {
       try {
         // Load cached first
         const cached = this.safeParse("projects");
-        if (cached) this.featuredProjects = cached;
+        if (cached) this.featuredProjects = this.normalizeList(cached);
 
         // Fetch latest
         const result = await this.handleRequest(
           featuredProjectService.getAllFeaturedProjects.bind(featuredProjectService)
         );
 
-        this.featuredProjects = result;
+        this.featuredProjects = this.normalizeList(result);
         this.syncProjectsCache();
       } catch (error) {
         toast.error(error?.response?.data?.message || "Failed to load featured projects");
@@ -92,7 +124,7 @@ export const useFeaturedProjectsStore = defineStore('featuredProjects', {
 
         // 3. apply immediate UI update
         if (found) {
-          this.selectedProject = found;
+          this.selectedProject = this.normalizeProject(found);
         }
 
         // 4. fetch fresh version
@@ -101,8 +133,8 @@ export const useFeaturedProjectsStore = defineStore('featuredProjects', {
           id
         );
 
-        this.selectedProject = project;
-        this.saveSelectedToCache(project);
+        this.selectedProject = this.normalizeProject(project);
+        this.saveSelectedToCache(this.selectedProject);
 
       } catch (error) {
         toast.error(error?.response?.data?.message || "Failed to load featured project");
@@ -170,7 +202,7 @@ export const useFeaturedProjectsStore = defineStore('featuredProjects', {
           updatedData
         );
 
-        const updatedProject = res.project;
+        const updatedProject = this.normalizeProject(res.project);
 
         // update state properly
         this.featuredProjects = this.featuredProjects.map(p =>

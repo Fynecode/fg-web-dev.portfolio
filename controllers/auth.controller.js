@@ -95,4 +95,43 @@ export default class auhtController{
 
         
     };
+
+    forgotPassword = async (req, res, next) => {
+        try {
+            await auhtServ.requestPasswordReset(req);
+            res.status(200).json({ success: true, message: "If that email exists, a reset link was sent." });
+        } catch (error) {
+            next(error)
+        }
+    };
+
+    resetPassword = async (req, res, next) => {
+        try {
+            const { savedAdmin, accessToken, refreshToken } = await auhtServ.resetPassword(req);
+
+            res.cookie('refresh', 
+                refreshToken, 
+                {
+                    httpOnly: true, 
+                    sameSite: COOKIE_SAMESITE, 
+                    secure: COOKIE_SECURE === 'true',
+                    maxAge: 24 * 60 * 60 * 1000
+                }
+            )
+
+            res.cookie('access',
+                accessToken, 
+                {
+                    httpOnly: true, 
+                    sameSite: COOKIE_SAMESITE, 
+                    secure: COOKIE_SECURE === 'true',
+                    maxAge: 3 * 60 * 1000
+                }
+            )
+
+            res.status(200).json({ success: true, admin: savedAdmin });
+        } catch (error) {
+            next(error)
+        }
+    };
 }

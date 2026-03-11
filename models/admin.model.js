@@ -32,6 +32,9 @@ const adminSchema = Schema({
         immutable: true
     },
     refreshToken: [String]
+    ,
+    resetPasswordToken: { type: String, select: false },
+    resetPasswordExpires: { type: Date, select: false }
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt'}
 });

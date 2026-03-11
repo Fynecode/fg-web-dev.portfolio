@@ -9,7 +9,20 @@ import {
 import { authenticate, authorizeRole } from "../middleware/auth.middleware.js";
 import multer from "multer";
 
-const upload = multer({storage});
+const MAX_UPLOAD_MB = 15;
+const upload = multer({
+    storage,
+    limits: { fileSize: MAX_UPLOAD_MB * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        const isVideo = file.mimetype.startsWith("video/");
+        const isImage = file.mimetype.startsWith("image/");
+
+        if (file.fieldname === "file" && isVideo) return cb(null, true);
+        if (file.fieldname === "picture" && isImage) return cb(null, true);
+
+        return cb(new Error("Invalid file type. Only videos for file and images for picture are allowed."));
+    }
+});
 
 const featuredRouter = express.Router();
 const featuredCtr = new featuredController();

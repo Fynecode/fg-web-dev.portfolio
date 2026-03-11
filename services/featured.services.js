@@ -119,14 +119,15 @@ export default class featuredServices {
                 const newPic = req.files.picture[0];
 
                 // delete previous testimonial pic if exists
-                if (featured.testimonial.pictureUrl) {
+                if (featured.testimonial.pictureId) {
                     await cloudinary.uploader.destroy(
-                        featured.testimonial.pictureUrl,
+                        featured.testimonial.pictureId,
                         { resource_type: "image" }
                     );
                 }
 
                 featured.testimonial.pictureUrl = newPic.path;
+                featured.testimonial.pictureId = newPic.filename;
             }
 
             // ------------------------------------------
@@ -150,10 +151,13 @@ export default class featuredServices {
             if (!existing) throw new AppError({ message: "Featured project not found", status: 404 });
 
             // Delete file from Cloudinary
-            const cloudRes = await cloudinary.uploader.destroy(
-                existing.file.fileName,
-                { resource_type: 'video' }
-            );
+            let cloudRes = { result: "ok" };
+            if (existing.file?.fileName) {
+                cloudRes = await cloudinary.uploader.destroy(
+                    existing.file.fileName,
+                    { resource_type: 'video' }
+                );
+            }
 
             if (cloudRes.result === "ok") {
                 await Featured.findByIdAndDelete(id);
@@ -214,7 +218,7 @@ export default class featuredServices {
 
             const featuredProject = await Featured.findById(id);
             if (!featuredProject) {
-                throw AppError({ message: "Featured project not found", status: 404 });
+                throw new AppError({ message: "Featured project not found", status: 404 });
             }
 
             return featuredProject;

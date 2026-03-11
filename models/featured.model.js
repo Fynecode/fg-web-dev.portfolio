@@ -41,7 +41,8 @@ const featuredSchema = new Schema({
 
     testimonial: {
         feedback: { type: String },
-        pictureUrl: { type: String }
+        pictureUrl: { type: String },
+        pictureId: { type: String }
     },
 
     file: {

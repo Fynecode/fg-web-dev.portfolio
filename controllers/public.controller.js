@@ -15,7 +15,11 @@ export const sendEmailCtr = async (req, res, next) =>{
 
 export const getAllFeatured = async (req, res, next) => {
     try {
-        const featuredList = await featured.getAllFeatured(req);
+        const safeReq = {
+            ...req,
+            query: { ...req.query, status: 'published' }
+        };
+        const featuredList = await featured.getAllFeatured(safeReq);
         res.status(200).json({success: true, featuredList});
     } catch (error) {
         next(error)

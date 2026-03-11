@@ -1,7 +1,7 @@
 import { Router } from "express";
 import authController from "../controllers/auth.controller.js";
 import rateLimit from "express-rate-limit";
-import { validateLogout, validateSignIn, validateSignUp } from "../validations/auth.validation.js";
+import { validateLogout, validateSignIn, validateSignUp, validateForgotPassword, validateResetPassword } from "../validations/auth.validation.js";
 
 const authRouter = Router();
 const authControl = new authController();
@@ -17,5 +17,9 @@ authRouter.post('/sign-up', validateSignUp, limitter, authControl.registerAdmin)
 authRouter.post('/sign-in', validateSignIn, limitter, authControl.loginAdmin);
 
 authRouter.patch('/logout/:id', validateLogout, limitter, authControl.logoutAdmin);
+
+authRouter.post('/forgot-password', validateForgotPassword, limitter, authControl.forgotPassword);
+
+authRouter.post('/reset-password', validateResetPassword, limitter, authControl.resetPassword);
 
 export default authRouter

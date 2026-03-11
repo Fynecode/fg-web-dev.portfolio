@@ -16,9 +16,9 @@ export const validateUpdateFeatured = [
     ...validators.bodyString({field: 'challenges', optional: true}),
     ...validators.bodyString({field: 'solution', optional: true}),
     ...validators.bodyString({field: 'feedback', optional: true}),
-    ...validators.bodyStringArray({field: 'scope', optional: true}),
-    ...validators.bodyStringArray({field: 'tags', optional: true}),
-    ...validators.bodyStringArray({field: 'deliveredFeats', optional: true}),
+    ...validators.bodyStringArrayFlexible({field: 'scope', optional: true}),
+    ...validators.bodyStringArrayFlexible({field: 'tags', optional: true}),
+    ...validators.bodyStringArrayFlexible({field: 'deliveredFeats', optional: true}),
     ...validators.bodyEnums({field: 'status', values: ['draft', 'published'], optional: true}),
     validate
 ];

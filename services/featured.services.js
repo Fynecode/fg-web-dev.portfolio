@@ -45,8 +45,35 @@ export default class featuredServices {
                 deliveredFeats,
                 tags,
                 status,
-                feedback // expected object: { feedback: "" }
+                feedback
             } = req.body;
+
+            const normalizeNullable = (value) => {
+                if (value === undefined) return undefined;
+                if (value === null) return null;
+                if (value === 'null' || value === '') return null;
+                return value;
+            };
+
+            const parseArrayField = (value) => {
+                if (value === undefined) return undefined;
+                if (Array.isArray(value)) return value;
+                if (value === null || value === 'null' || value === '') return [];
+                if (typeof value === 'string') {
+                    const trimmed = value.trim();
+                    if (!trimmed) return [];
+                    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                        try {
+                            const parsed = JSON.parse(trimmed);
+                            return Array.isArray(parsed) ? parsed : [];
+                        } catch {
+                            return [];
+                        }
+                    }
+                    return trimmed.split(",").map(v => v.trim()).filter(Boolean);
+                }
+                return [];
+            };
 
             const featured = await Featured.findById(id);
             if (!featured) {
@@ -56,30 +83,29 @@ export default class featuredServices {
             // ------------------------------------------
             // BASIC FIELDS
             // ------------------------------------------
-            if (title !== undefined) featured.title = title;
-            if (description !== undefined) featured.description = description;
-            if (company !== undefined) featured.company = company;
-            if (scope !== undefined) featured.scope = scope;
-            if (link !== undefined) featured.link = link;
+            if (title !== undefined) featured.title = normalizeNullable(title);
+            if (description !== undefined) featured.description = normalizeNullable(description);
+            if (company !== undefined) featured.company = normalizeNullable(company);
+            if (link !== undefined) featured.link = normalizeNullable(link);
 
-            if (challenges !== undefined) featured.challenges = challenges;
-            if (solution !== undefined) featured.solution = solution;
+            if (challenges !== undefined) featured.challenges = normalizeNullable(challenges);
+            if (solution !== undefined) featured.solution = normalizeNullable(solution);
 
-            if (status !== undefined) featured.status = status;
+            if (status !== undefined) featured.status = normalizeNullable(status) || featured.status;
 
             // ------------------------------------------
             // ARRAY FIELDS
             // ------------------------------------------
+            if (scope !== undefined) {
+                featured.scope = parseArrayField(scope);
+            }
+
             if (deliveredFeats !== undefined) {
-                featured.deliveredFeats = Array.isArray(deliveredFeats)
-                    ? deliveredFeats
-                    : deliveredFeats.split(",").map(f => f.trim());
+                featured.deliveredFeats = parseArrayField(deliveredFeats);
             }
 
             if (tags !== undefined) {
-                featured.tags = Array.isArray(tags)
-                    ? tags
-                    : tags.split(",").map(t => t.trim());
+                featured.tags = parseArrayField(tags);
             }
 
             // ------------------------------------------
@@ -111,7 +137,7 @@ export default class featuredServices {
 
             // 1. Update feedback text
             if (feedback !== undefined) {
-                featured.testimonial.feedback = feedback;
+                featured.testimonial.feedback = normalizeNullable(feedback);
             }
 
             // 2. Update pictureUrl if picture uploaded

@@ -83,6 +83,44 @@ export const validators = {
     ];
   },
 
+  bodyStringArrayFlexible: (...args) => {
+    const { field, message, optional } = normalizeArgs(args);
+    return [
+      body(field)
+        .customSanitizer(value => {
+          if (typeof value === 'string') {
+            const trimmed = value.trim();
+            if (!trimmed || trimmed === 'null') return [];
+            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+              try {
+                const parsed = JSON.parse(trimmed);
+                return Array.isArray(parsed) ? parsed : value;
+              } catch {
+                return value;
+              }
+            }
+          }
+          return value;
+        })
+        .custom(value => {
+          if (!optional && (value === undefined || value === null || value === '')) {
+            throw new Error(message || `${field} is required and must be an array`);
+          }
+          if (value === undefined || value === null || value === '' || value === 'null') return true;
+          if (Array.isArray(value)) return true;
+          return false;
+        })
+        .optional(optional)
+        .isArray().withMessage(`${field} must be an array`),
+
+      body(`${field}.*`)
+        .optional(optional)
+        .isString().withMessage(`Each ${field} must be a string`)
+        .trim()
+        .escape()
+    ];
+  },
+
   queryObjectIdArray: (...args) => {
     const { field, message, optional } = normalizeArgs(args);
     return [
@@ -182,6 +220,10 @@ export const validators = {
     const { field, message, optional } = normalizeArgs(args);
     return [
       body(field)
+        .customSanitizer(value => {
+          if (value === 'null' || value === '') return null;
+          return value;
+        })
         .custom(requiredCheck(optional, field, message))
         .optional({ nullable: optional })
         .isURL().withMessage(`Invalid url`)

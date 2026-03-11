@@ -1,11 +1,21 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { UserPen, Lock, X } from 'lucide-vue-next'
 import editProfile from '../edit-admin-comps/edit-profile.vue';
 import editPassword from '../edit-admin-comps/edit-password.vue';
 
 const emits = defineEmits(['close'])
-const activeTab = ref('details') // default
+const props = defineProps({
+  initialTab: { type: String, default: 'details' }
+})
+const activeTab = ref(props.initialTab) // default
+
+watch(
+  () => props.initialTab,
+  (tab) => {
+    if (tab) activeTab.value = tab
+  }
+)
 
 const setTab = (tab) => {
   activeTab.value = tab
@@ -38,8 +48,8 @@ const setTab = (tab) => {
       </div>
 
       <!-- Conditional rendering of child components -->
-      <editProfile v-if="activeTab === 'details'" />
-      <editPassword v-else />
+      <editProfile v-if="activeTab === 'details'" @success="emits('close')" />
+      <editPassword v-else @success="emits('close')" />
     </div>
   </div>
 </template>

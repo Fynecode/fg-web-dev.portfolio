@@ -34,7 +34,7 @@
 <template>
   <div class="fixed overflow-y-auto z-50 inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
     <form
-      @submit.prevent="handleSubmit()" class="w-[60%] max-sm:hidden bg-[#020320] text-white rounded-2xl p-8 shadow-2xl border border-white/10 flex flex-col gap-6"
+      @submit.prevent="handleSubmit()" class="w-full sm:w-[80%] md:w-[60%] max-sm:min-h-screen max-sm:rounded-none bg-[#020320] text-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/10 flex flex-col gap-6"
     >
       <h2 class="text-xl font-semibold text-center text-[#0584d8]">
         Add Featured Project

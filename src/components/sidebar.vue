@@ -1,7 +1,8 @@
 <script setup>
 import { RouterLink, useRoute } from 'vue-router';
 import { ref, watch, computed } from 'vue';
-import { LayoutDashboard, Settings } from 'lucide-vue-next';
+import { LayoutDashboard, Settings, LogOut } from 'lucide-vue-next';
+import { handleAdminLogout } from '@/utils/admin.logout.util';
 
 const props = defineProps({
   user: {type: Object, required: true}
@@ -28,7 +29,7 @@ const menuItems = computed(() => {
   
   return [
     { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
-    { icon: Settings, label: 'Settings',},
+    { icon: Settings, label: 'Settings', to: '/settings' },
   ]
 })
 
@@ -43,8 +44,7 @@ const toggleMobileDropdown = (label) => {
 <template>
   <!-- Desktop Sidebar -->
   <nav class="desktop-nav z-30">
-    <div>
-    </div>
+    <div class="brand">Fynecode</div>
     <ul class="desktop-nav-list">
       <li 
         v-for="item in menuItems" 
@@ -64,17 +64,21 @@ const toggleMobileDropdown = (label) => {
         </RouterLink>
       </li>
     </ul>
+    <button class="logout-btn" type="button" @click="handleAdminLogout">
+      <LogOut class="icons" /> Logout
+    </button>
   </nav>
 
   <!-- Mobile Nav -->
   <nav class="mobile-nav" :class="isOpen ? 'open' : 'closed'">
+    <div class="mobile-brand-fixed">Fynecode</div>
     <button class="burger-menu" @click="isOpen = !isOpen">
       <span></span>
       <span></span>
       <span></span>
     </button>
     <Transition name="drop">
-      <ul v-show="isOpen">
+      <ul v-show="isOpen" class="mobile-menu">
         <li v-for="item in menuItems" :key="item.label">
           <!-- Single link -->
           <RouterLink 
@@ -106,6 +110,11 @@ const toggleMobileDropdown = (label) => {
             </Transition>
           </div>
         </li>
+        <li>
+          <button class="logout-btn mobile-logout" type="button" @click="handleAdminLogout">
+            Logout
+          </button>
+        </li>
       </ul>
     </Transition>
   </nav>
@@ -121,8 +130,8 @@ const toggleMobileDropdown = (label) => {
       top: 0;
       left: 0;
       height: 100vh;
-      display: grid;
-      grid-template-rows: 1fr 1fr 1fr;
+      display: flex;
+      flex-direction: column;
     }
 
     .desktop-nav .desktop-nav-list{
@@ -132,6 +141,7 @@ const toggleMobileDropdown = (label) => {
       display: flex;
       flex-direction: column;
       gap: 2rem;
+      margin: auto 0;
     }
 
     .icons{
@@ -145,6 +155,36 @@ const toggleMobileDropdown = (label) => {
       gap: 1rem;
     }
 
+    .brand{
+      font-family: var(--header-font);
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      color: white;
+      padding: 0.5rem 0.25rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .logout-btn{
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.75rem 0.5rem;
+      border: 0;
+      background-color: transparent;
+      color: white;
+      font-family: var(--paragraph-font);
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .logout-btn:hover{
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
     .desktop-nav .desktop-nav-list li{
       font-size: 1rem;
       font-family: var(--paragraph-font);
@@ -154,6 +194,13 @@ const toggleMobileDropdown = (label) => {
     .desktop-nav .desktop-nav-list li a{
       color: white;
       text-decoration: none;
+    }
+
+    .desktop-nav .desktop-nav-list li .active-nav{
+      background-color: rgba(255, 255, 255, 0.08);
+      border-left: 3px solid var(--secondary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
     }
 
     .desktop-nav .desktop-nav-list li .active-nav .icons{
@@ -288,27 +335,26 @@ const toggleMobileDropdown = (label) => {
     z-index: 1000;
     background-color: var(--off-color);
     box-sizing: border-box;
-    transition: max-height 0.4s ease-in-out;
+    transition: max-height 0.25s ease-out;
   }
 
   .mobile-nav.open{
-    max-height: 70%;
-    transition: max-height 0.4s ease-in-out;
+    max-height: 100vh;
+    transition: max-height 0.25s ease-out;
   }
 
   .burger-menu{
     position: fixed;
     top: 0.5rem;
     right: 0.5rem;
-    width: 1.5rem;
+    width: 32px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     background-color: transparent;
     border: 0;
-    width: 45px;
   }
 
   .burger-menu span{
@@ -334,9 +380,32 @@ const toggleMobileDropdown = (label) => {
     color: white;
   }
 
+  .mobile-brand-fixed{
+    position: fixed;
+    top: 0.55rem;
+    left: 0.75rem;
+    font-family: var(--header-font);
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    z-index: 1001;
+  }
+
   .mobile-nav ul li a{
     color: white;
     text-decoration: none;
+  }
+
+  .mobile-nav ul li .active-nav{
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .mobile-logout{
+    border: 0;
   }
 
   .mobile-dropdown-toggle {
@@ -359,20 +428,20 @@ const toggleMobileDropdown = (label) => {
 
   .drop-enter-active,
   .drop-leave-active {
-    transition: max-height 0.3s ease, opacity 0.3s ease;
+    transition: opacity 0.25s ease, transform 0.25s ease;
     overflow: hidden;
   }
 
   .drop-enter-from,
   .drop-leave-to {
-    max-height: 0;
     opacity: 0;
+    transform: translateY(-8px);
   }
 
   .drop-enter-to,
   .drop-leave-from {
-    max-height: 500px;
     opacity: 1;
+    transform: translateY(0);
   }
 
   @media screen and (max-width:780px) {

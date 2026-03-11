@@ -1,15 +1,29 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { useAdminStore } from '@/stores/user'
 import errorMessage from '../error-message.vue'
+import { useToast } from 'vue-toastification'
 
 const adminStore = useAdminStore()
 const errorMsg = ref()
+const toast = useToast()
+const emits = defineEmits(['success'])
 
 const form = reactive({
-  name: adminStore.admin.name,
-  email: adminStore.admin.email
+  name: '',
+  email: ''
 })
+
+watch(
+  () => adminStore.user,
+  (user) => {
+    if (user) {
+      form.name = user.name || ''
+      form.email = user.email || ''
+    }
+  },
+  { immediate: true }
+)
 
 const validateForm = () => {
   for (const key in form) {
@@ -25,9 +39,18 @@ const validateForm = () => {
   return true
 }
 
-function handleUpdate() {
+async function handleUpdate() {
   if (!validateForm()) return
-  adminStore.updateAdmin(adminStore.admin_id, form)
+  try {
+    await adminStore.updateAdmin(form)
+    toast.success('Profile updated')
+    form.name = adminStore.user?.name || ''
+    form.email = adminStore.user?.email || ''
+    errorMsg.value = ''
+    emits('success')
+  } catch (err) {
+    errorMsg.value = adminStore.error?.message || err?.message || 'Update failed'
+  }
 }
 </script>
 

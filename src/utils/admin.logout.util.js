@@ -18,5 +18,5 @@ export const handleAdminLogout = async () =>{
     localStorage.removeItem('clientFiles')
     localStorage.removeItem('role')
 
-    router.push('/admin/login')
+    router.push('/')
 }

@@ -15,6 +15,9 @@
           <component :is="passType === 'password'? Eye : EyeOff" class="icon" @click="togglePassType" />
         </div>
         <button type="submit" class="bg-white p-2 w-[60%] cursor-pointer hover:bg-white/90 transition-all rounded flex flex-row gap-2 justify-center items-center" aria-label="Submit login form"><loader2 :class="auth.loading? 'animate-spin':'hidden'"/> Login</button>
+        <RouterLink to="/forgot-password" class="text-sm text-white/70 hover:text-white underline underline-offset-4">
+          Forgot password?
+        </RouterLink>
       </div>
     </form>
   </main>

@@ -30,6 +30,14 @@ export const useAuthStore = defineStore('auth', {
       return this.handleRequest(authServ.adminLogin.bind(authServ), form)
     },
 
+    async forgotPassword(form) {
+      return this.handleRequest(authServ.forgotPassword.bind(authServ), form)
+    },
+
+    async resetPassword(form) {
+      return this.handleRequest(authServ.resetPassword.bind(authServ), form)
+    },
+
     // 👤 Client login
     async clientLogin(form) {
       return this.handleRequest(authServ.clientLogin.bind(authServ), form)

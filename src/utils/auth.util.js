@@ -11,4 +11,14 @@ export default class AuthService extends BaseService {
     if (res.status === 404) throw new Error('Invalid password or email')
     return this.handleResponse(res, 'Failed to validate admin')
   }
+
+  async forgotPassword(form) {
+    const res = await this.fetch.post(`${this.base_route}/forgot-password`, form)
+    return this.handleResponse(res, 'Failed to request password reset')
+  }
+
+  async resetPassword(form) {
+    const res = await this.fetch.post(`${this.base_route}/reset-password`, form)
+    return this.handleResponse(res, 'Failed to reset password')
+  }
 }

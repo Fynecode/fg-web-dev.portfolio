@@ -3,9 +3,12 @@ import { ref, reactive } from 'vue'
 import { useAdminStore } from '@/stores/user'
 import errorMessage from '../error-message.vue'
 import { Eye, EyeOff } from 'lucide-vue-next'
+import { useToast } from 'vue-toastification'
 
 const adminStore = useAdminStore()
 const errorMsg = ref()
+const toast = useToast()
+const emits = defineEmits(['success'])
 
 const form = reactive({
   currentPassword: '',
@@ -43,14 +46,21 @@ const validateForm = () => {
 }
 
 async function handleUpdatePassword() {
-    console.log("Handle upload", validateForm())
   if (!validateForm()) return
 
-  await adminStore.changePassword(adminStore.admin_id, form)
-
-  if(adminStore.error){
-    errorMsg.value = adminStore.error
-    return
+  try {
+    await adminStore.changePassword(form)
+    toast.success('Password updated')
+    form.currentPassword = ''
+    form.newPassword = ''
+    form.confirmPassword = ''
+    errorMsg.value = ''
+    showCurrent.value = false
+    showNew.value = false
+    showConfirm.value = false
+    emits('success')
+  } catch (err) {
+    errorMsg.value = adminStore.error?.message || err?.message || 'Update failed'
   }
 }
 </script>

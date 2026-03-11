@@ -5,9 +5,9 @@
     <div class="flex justify-between items-center mb-6">
       <button
         @click="router.back()"
-        class="px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 transition"
+        class="px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 transition flex items-center gap-2"
       >
-        ← Back
+        <ArrowLeft class="w-4 h-4" /> Back
       </button>
 
       <button
@@ -26,16 +26,37 @@
         class="w-full md:w-3/5 lg:w-2/5 rounded-xl overflow-hidden shadow-xl border border-white/10 aspect-video flex items-center justify-center"
       >
         <!-- Video -->
-        <video
-          v-if="form.file?.filePath"
-          :src="form.file?.filePath"
-          controls
-          class="w-full h-full object-cover"
-        ></video>
+        <div v-if="form.file?.filePath && !isEditing.video" class="w-full h-full relative group">
+          <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition"></div>
+          <div class="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition">
+            <button
+              type="button"
+              @click.stop="toggleEdit('video')"
+              class="p-2 rounded-full bg-white/20 hover:bg-white/30 transition inline-flex items-center justify-center backdrop-blur"
+            >
+              <Pencil class="w-4 h-4 pointer-events-none" />
+            </button>
+          </div>
+          <video
+            :src="form.file?.filePath"
+            controls
+            class="w-full h-full object-cover"
+          ></video>
+        </div>
 
         <!-- Upload Input -->
         <div v-else class="w-full p-4">
-          <label class="text-sm text-white/50">Upload Project Video</label>
+          <label class="text-sm text-white/50 flex items-center gap-2">
+            Upload Project Video
+            <button
+              v-if="form.file?.filePath"
+              type="button"
+              @click.stop="toggleEdit('video')"
+              class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+            >
+              <Eye class="w-3 h-3 pointer-events-none" />
+            </button>
+          </label>
           <input
             type="file"
             accept="video/*"
@@ -53,10 +74,19 @@
 
           <!-- Title -->
           <div>
-            <label class="text-sm text-white/50" @dblclick="enableEdit('title')">Title</label>
+            <label class="text-sm text-white/50 flex items-center gap-2">
+              Title
+              <button
+                type="button"
+                @click.stop="toggleEdit('title')"
+                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+              >
+                <Pencil v-if="!isEditing.title" class="w-3 h-3 pointer-events-none" />
+                <Eye v-else class="w-3 h-3 pointer-events-none" />
+              </button>
+            </label>
             <div
               v-if="!isEditing.title"
-              @dblclick="enableEdit('title')"
               class="text-2xl font-semibold cursor-pointer"
             >
               {{ form.title }}
@@ -71,10 +101,19 @@
 
           <!-- Description -->
           <div>
-            <label class="text-sm text-white/50" @dblclick="enableEdit('description')">Description</label>
+            <label class="text-sm text-white/50 flex items-center gap-2">
+              Description
+              <button
+                type="button"
+                @click.stop="toggleEdit('description')"
+                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+              >
+                <Pencil v-if="!isEditing.description" class="w-3 h-3 pointer-events-none" />
+                <Eye v-else class="w-3 h-3 pointer-events-none" />
+              </button>
+            </label>
             <div
               v-if="!isEditing.description"
-              @dblclick="enableEdit('description')"
               class="text-lg cursor-pointer"
             >
               {{ form.description }}
@@ -88,10 +127,19 @@
           </div>
 
           <div>
-            <label class="text-sm text-white/50" @dblclick="enableEdit('link')">Link</label>
+            <label class="text-sm text-white/50 flex items-center gap-2">
+              Link
+              <button
+                type="button"
+                @click.stop="toggleEdit('link')"
+                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+              >
+                <Pencil v-if="!isEditing.link" class="w-3 h-3 pointer-events-none" />
+                <Eye v-else class="w-3 h-3 pointer-events-none" />
+              </button>
+            </label>
             <div
               v-if="!isEditing.link"
-              @dblclick="enableEdit('link')"
               class="text-lg cursor-pointer"
             >
               {{ form.link }}
@@ -106,10 +154,19 @@
 
           <!-- Company -->
           <div>
-            <label class="text-sm text-white/50" @dblclick="enableEdit('company')">Company</label>
+            <label class="text-sm text-white/50 flex items-center gap-2">
+              Company
+              <button
+                type="button"
+                @click.stop="toggleEdit('company')"
+                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+              >
+                <Pencil v-if="!isEditing.company" class="w-3 h-3 pointer-events-none" />
+                <Eye v-else class="w-3 h-3 pointer-events-none" />
+              </button>
+            </label>
             <div
               v-if="!isEditing.company"
-              @dblclick="enableEdit('company')"
               class="text-lg cursor-pointer"
             >
               {{ form.company }}
@@ -140,26 +197,37 @@
                 :key="'scope-' + index"
                 class="flex items-center bg-white/10 px-3 py-1 rounded"
               >
-                <span
-                  v-if="!isEditing.scope[index]"
-                  @dblclick="enableArrayEdit('scope', index)"
-                  class="cursor-pointer"
-                >
-                  {{ item }}
+                <span v-if="!isEditing.scope[index]" class="flex items-center gap-2">
+                  <span>{{ item }}</span>
+                  <button
+                    type="button"
+                    @click.stop="toggleArrayEdit('scope', index)"
+                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+                  >
+                    <Pencil class="w-3 h-3 pointer-events-none" />
+                  </button>
                 </span>
 
-                <input
-                  v-else
-                  v-model="form.scope[index]"
-                  @blur="stopArrayEdit('scope', index)"
-                  class="bg-transparent outline-none text-white w-24"
-                />
+                <span v-else class="flex items-center gap-2">
+                  <input
+                    v-model="form.scope[index]"
+                    @blur="stopArrayEdit('scope', index)"
+                    class="bg-transparent outline-none text-white w-24"
+                  />
+                  <button
+                    type="button"
+                    @click.stop="toggleArrayEdit('scope', index)"
+                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+                  >
+                    <Eye class="w-3 h-3 pointer-events-none" />
+                  </button>
+                </span>
 
                 <button
                   @click="removeFromArray('scope', index)"
                   class="ml-2 text-red-400 hover:text-red-500"
                 >
-                  ✖
+                  <X class="w-3 h-3" />
                 </button>
               </div>
             </div>
@@ -183,25 +251,37 @@
                 :key="'tag-' + index"
                 class="flex items-center bg-white/10 px-3 py-1 rounded"
               >
-                <span
-                  v-if="!isEditing.tags[index]"
-                  @dblclick="enableArrayEdit('tags', index)"
-                >
-                  {{ item }}
+                <span v-if="!isEditing.tags[index]" class="flex items-center gap-2">
+                  <span>{{ item }}</span>
+                  <button
+                    type="button"
+                    @click.stop="toggleArrayEdit('tags', index)"
+                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+                  >
+                    <Pencil class="w-3 h-3 pointer-events-none" />
+                  </button>
                 </span>
 
-                <input
-                  v-else
-                  v-model="form.tags[index]"
-                  @blur="stopArrayEdit('tags', index)"
-                  class="bg-transparent outline-none text-white w-24"
-                />
+                <span v-else class="flex items-center gap-2">
+                  <input
+                    v-model="form.tags[index]"
+                    @blur="stopArrayEdit('tags', index)"
+                    class="bg-transparent outline-none text-white w-24"
+                  />
+                  <button
+                    type="button"
+                    @click.stop="toggleArrayEdit('tags', index)"
+                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+                  >
+                    <Eye class="w-3 h-3 pointer-events-none" />
+                  </button>
+                </span>
 
                 <button
                   @click="removeFromArray('tags', index)"
                   class="ml-2 text-red-400 hover:text-red-500"
                 >
-                  ✖
+                  <X class="w-3 h-3" />
                 </button>
               </div>
             </div>
@@ -225,25 +305,37 @@
                 :key="'feat-' + index"
                 class="flex items-center bg-white/10 px-3 py-1 rounded"
               >
-                <span
-                  v-if="!isEditing.deliveredFeats[index]"
-                  @dblclick="enableArrayEdit('deliveredFeats', index)"
-                >
-                  {{ item }}
+                <span v-if="!isEditing.deliveredFeats[index]" class="flex items-center gap-2">
+                  <span>{{ item }}</span>
+                  <button
+                    type="button"
+                    @click.stop="toggleArrayEdit('deliveredFeats', index)"
+                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+                  >
+                    <Pencil class="w-3 h-3 pointer-events-none" />
+                  </button>
                 </span>
 
-                <input
-                  v-else
-                  v-model="form.deliveredFeats[index]"
-                  @blur="stopArrayEdit('deliveredFeats', index)"
-                  class="bg-transparent outline-none text-white w-24"
-                />
+                <span v-else class="flex items-center gap-2">
+                  <input
+                    v-model="form.deliveredFeats[index]"
+                    @blur="stopArrayEdit('deliveredFeats', index)"
+                    class="bg-transparent outline-none text-white w-24"
+                  />
+                  <button
+                    type="button"
+                    @click.stop="toggleArrayEdit('deliveredFeats', index)"
+                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+                  >
+                    <Eye class="w-3 h-3 pointer-events-none" />
+                  </button>
+                </span>
 
                 <button
                   @click="removeFromArray('deliveredFeats', index)"
                   class="ml-2 text-red-400 hover:text-red-500"
                 >
-                  ✖
+                  <X class="w-3 h-3" />
                 </button>
               </div>
             </div>
@@ -251,13 +343,22 @@
 
           <!-- Challenges -->
           <div>
-            <label class="text-sm text-white/50">Challenges</label>
+            <label class="text-sm text-white/50 flex items-center gap-2">
+              Challenges
+              <button
+                type="button"
+                @click.stop="toggleEdit('challenges')"
+                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+              >
+                <Pencil v-if="!isEditing.challenges" class="w-3 h-3 pointer-events-none" />
+                <Eye v-else class="w-3 h-3 pointer-events-none" />
+              </button>
+            </label>
             <div
               v-if="!isEditing.challenges"
-              @dblclick="enableEdit('challenges')"
               class="cursor-pointer whitespace-pre-line"
             >
-              {{ form.challenges || "Double-click to add challenges..." }}
+              {{ form.challenges || "Add challenges..." }}
             </div>
             <textarea
               v-else
@@ -269,13 +370,22 @@
 
           <!-- Solution -->
           <div>
-            <label class="text-sm text-white/50">Solution</label>
+            <label class="text-sm text-white/50 flex items-center gap-2">
+              Solution
+              <button
+                type="button"
+                @click.stop="toggleEdit('solution')"
+                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+              >
+                <Pencil v-if="!isEditing.solution" class="w-3 h-3 pointer-events-none" />
+                <Eye v-else class="w-3 h-3 pointer-events-none" />
+              </button>
+            </label>
             <div
               v-if="!isEditing.solution"
-              @dblclick="enableEdit('solution')"
               class="cursor-pointer whitespace-pre-line"
             >
-              {{ form.solution || "Double-click to add solution..." }}
+              {{ form.solution || "Add solution..." }}
             </div>
             <textarea
               v-else
@@ -287,13 +397,19 @@
 
           <!-- Status -->
           <div>
-            <label class="text-sm text-white/50">Status</label>
+            <label class="text-sm text-white/50 flex items-center gap-2">
+              Status
+              <button
+                type="button"
+                @click.stop="toggleEdit('status')"
+                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+              >
+                <Pencil v-if="!isEditing.status" class="w-3 h-3 pointer-events-none" />
+                <Eye v-else class="w-3 h-3 pointer-events-none" />
+              </button>
+            </label>
 
-            <div
-              v-if="!isEditing.status"
-              @dblclick="enableEdit('status')"
-              class="cursor-pointer"
-            >
+            <div v-if="!isEditing.status" class="cursor-pointer">
               {{ form.status }}
             </div>
 
@@ -334,12 +450,21 @@
 
           <!-- Feedback -->
           <div>
-            <label class="text-sm text-white/50">Feedback</label>
+            <label class="text-sm text-white/50 flex items-center gap-2">
+              Feedback
+              <button
+                type="button"
+                @click.stop="toggleEdit('testimonialFeedback')"
+                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
+              >
+                <Pencil v-if="!isEditing.testimonialFeedback" class="w-3 h-3 pointer-events-none" />
+                <Eye v-else class="w-3 h-3 pointer-events-none" />
+              </button>
+            </label>
             <p
             v-if="!isEditing.testimonialFeedback"
-            @dblclick="enableEdit('testimonialFeedback')"
             >
-              {{form.testimonial.feedback || "Double click to add feedback"}}
+              {{form.testimonial.feedback || "Add feedback"}}
             </p>
             <textarea
               v-else
@@ -371,7 +496,7 @@
 import { onMounted, ref, reactive, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useFeaturedProjectsStore } from "@/stores/featured.store";
-import { Loader2 } from "lucide-vue-next";
+import { ArrowLeft, Eye, Loader2, Pencil, X } from "lucide-vue-next";
 import { useToast } from "vue-toastification";
 
 const route = useRoute();
@@ -397,6 +522,7 @@ const isEditing = reactive({
   solution: false,
   testimonialFeedback: false,
   testimonialPicture: false,
+  video: false,
 });
 
 // Main form (mirroring schema)
@@ -430,8 +556,16 @@ function enableEdit(field) {
   isEditing[field] = true;
 }
 
+function toggleEdit(field) {
+  isEditing[field] = !isEditing[field];
+}
+
 function enableArrayEdit(field, index) {
   isEditing[field][index] = true;
+}
+
+function toggleArrayEdit(field, index) {
+  isEditing[field][index] = !isEditing[field][index];
 }
 
 function stopArrayEdit(field, index) {

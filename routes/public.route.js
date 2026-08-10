@@ -1,6 +1,6 @@
 import express from 'express';
 import rateLimit from "express-rate-limit";
-import {sendEmailCtr, getAllFeatured} from "../controllers/public.controller.js"
+import {sendEmailCtr, getAllFeatured, getByServiceType} from "../controllers/public.controller.js"
 import { validatePublicEmail } from "../validations/public.validation.js";
 
 const publicRouter = express.Router();
@@ -12,6 +12,7 @@ const emailLimiter = rateLimit({
 });
 
 publicRouter.get("/", getAllFeatured);
+publicRouter.get("/:serviceType", getByServiceType);
 publicRouter.post("/email", emailLimiter, validatePublicEmail, sendEmailCtr)
 
 export default publicRouter

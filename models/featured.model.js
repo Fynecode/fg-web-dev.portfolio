@@ -4,12 +4,6 @@ const { Schema } = mongoose;
 const featuredSchema = new Schema({
     title: { type: String, required: true },
     description: { type: String },
-    company: { type: String },
-
-    scope: { 
-        type: [String], 
-        default: [] 
-    },
 
     link: {
         type: String,
@@ -20,29 +14,16 @@ const featuredSchema = new Schema({
         }
     },
 
-    challenges: { type: String },
-    solution: { type: String },
-
-    deliveredFeats: {
-        type: [String],
-        default: []
-    },
-
-    tags: {
-        type: [String],
-        default: []
+    serviceType: {
+        type: String,
+        enum: ["business_website", "internal_tool", "automated_workflow"],
+        default: "business_website"
     },
 
     status: {
         type: String,
         enum: ["draft", "published"],
         default: "draft"
-    },
-
-    testimonial: {
-        feedback: { type: String },
-        pictureUrl: { type: String },
-        pictureId: { type: String }
     },
 
     file: {

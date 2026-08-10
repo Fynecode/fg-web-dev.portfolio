@@ -19,6 +19,7 @@ export const validateUpdateFeatured = [
     ...validators.bodyStringArrayFlexible({field: 'scope', optional: true}),
     ...validators.bodyStringArrayFlexible({field: 'tags', optional: true}),
     ...validators.bodyStringArrayFlexible({field: 'deliveredFeats', optional: true}),
+    ...validators.bodyEnums({field: 'serviceType', values: ['business_website', 'internal_tool', 'automated_workflow'], optional: true}),
     ...validators.bodyEnums({field: 'status', values: ['draft', 'published'], optional: true}),
     validate
 ];

@@ -82,6 +82,7 @@ export default class authServices{
 
             // Compare passwords
             const isPasswordValid = await bcrypt.compare(password, admin.password);
+            console.log("Is password valid?",isPasswordValid, "Admin password:", admin.password, "Input password:", password);
             if (!isPasswordValid) {
                 throw new AppError({ message: "Email or password invalid", status: 404 });
             }

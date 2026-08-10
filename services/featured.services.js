@@ -3,6 +3,45 @@ import AppError from "../utils/app.error.class.js";
 import { v2 as cloudinary } from "cloudinary";
 
 export default class featuredServices {
+    formatServiceType = (str) => {
+        if (!str) return "";
+
+        const normalized = Array.isArray(str)
+            ? str.find(v => typeof v === "string" && v.trim())
+            : str;
+
+        const value = typeof normalized === "string" ? normalized.trim() : "";
+        if (!value) return "";
+
+        return value.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+
+    normalizeServiceType = (value) => {
+        if (value === undefined) return undefined;
+        if (value === null) return null;
+
+        if (Array.isArray(value)) {
+            const first = value.find(item => typeof item === "string" && item.trim());
+            return first ? first.trim() : null;
+        }
+
+        if (typeof value === "string") {
+            const trimmed = value.trim();
+            return trimmed === "" || trimmed === "null" ? null : trimmed;
+        }
+
+        return null;
+    }
+
+    toPlainFeatured = (doc) => {
+        const plain = doc?.toObject?.() ?? (doc && typeof doc === "object" ? { ...doc } : {});
+
+        return {
+            ...plain,
+            serviceType: this.normalizeServiceType(plain.serviceType)
+        };
+    }
+
     createFeatured = async (req) => {
         try {
             // Prevent more than 5 featured projects
@@ -37,15 +76,9 @@ export default class featuredServices {
             const {
                 title,
                 description,
-                company,
-                scope,
                 link,
-                challenges,
-                solution,
-                deliveredFeats,
-                tags,
+                serviceType,
                 status,
-                feedback
             } = req.body;
 
             const normalizeNullable = (value) => {
@@ -53,26 +86,6 @@ export default class featuredServices {
                 if (value === null) return null;
                 if (value === 'null' || value === '') return null;
                 return value;
-            };
-
-            const parseArrayField = (value) => {
-                if (value === undefined) return undefined;
-                if (Array.isArray(value)) return value;
-                if (value === null || value === 'null' || value === '') return [];
-                if (typeof value === 'string') {
-                    const trimmed = value.trim();
-                    if (!trimmed) return [];
-                    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-                        try {
-                            const parsed = JSON.parse(trimmed);
-                            return Array.isArray(parsed) ? parsed : [];
-                        } catch {
-                            return [];
-                        }
-                    }
-                    return trimmed.split(",").map(v => v.trim()).filter(Boolean);
-                }
-                return [];
             };
 
             const featured = await Featured.findById(id);
@@ -85,28 +98,9 @@ export default class featuredServices {
             // ------------------------------------------
             if (title !== undefined) featured.title = normalizeNullable(title);
             if (description !== undefined) featured.description = normalizeNullable(description);
-            if (company !== undefined) featured.company = normalizeNullable(company);
+            if (serviceType !== undefined) featured.serviceType = this.normalizeServiceType(serviceType);
             if (link !== undefined) featured.link = normalizeNullable(link);
-
-            if (challenges !== undefined) featured.challenges = normalizeNullable(challenges);
-            if (solution !== undefined) featured.solution = normalizeNullable(solution);
-
             if (status !== undefined) featured.status = normalizeNullable(status) || featured.status;
-
-            // ------------------------------------------
-            // ARRAY FIELDS
-            // ------------------------------------------
-            if (scope !== undefined) {
-                featured.scope = parseArrayField(scope);
-            }
-
-            if (deliveredFeats !== undefined) {
-                featured.deliveredFeats = parseArrayField(deliveredFeats);
-            }
-
-            if (tags !== undefined) {
-                featured.tags = parseArrayField(tags);
-            }
 
             // ------------------------------------------
             // HANDLE FEATURED PROJECT VIDEO REPLACEMENT
@@ -129,36 +123,6 @@ export default class featuredServices {
                 };
             }
 
-            // ------------------------------------------
-            // HANDLE TESTIMONIAL UPDATE
-            // ------------------------------------------
-            if (!featured.testimonial)
-                featured.testimonial = {};
-
-            // 1. Update feedback text
-            if (feedback !== undefined) {
-                featured.testimonial.feedback = normalizeNullable(feedback);
-            }
-
-            // 2. Update pictureUrl if picture uploaded
-            if (req.files?.picture?.length > 0) {
-                const newPic = req.files.picture[0];
-
-                // delete previous testimonial pic if exists
-                if (featured.testimonial.pictureId) {
-                    await cloudinary.uploader.destroy(
-                        featured.testimonial.pictureId,
-                        { resource_type: "image" }
-                    );
-                }
-
-                featured.testimonial.pictureUrl = newPic.path;
-                featured.testimonial.pictureId = newPic.filename;
-            }
-
-            // ------------------------------------------
-            // SAVE AND RETURN
-            // ------------------------------------------
             await featured.save();
             return featured;
 
@@ -222,14 +186,22 @@ export default class featuredServices {
                 filter.status = status;
             }
 
-            const featuredList = await Featured.find(filter).sort({ createdAt: -1 });
+            const raw = await Featured.find(filter).sort({ createdAt: -1 });
 
-            if (featuredList.length === 0) {
+            if (raw.length === 0) {
                 throw new AppError({
                     message: "No featured projects found",
                     status: 404
                 });
             }
+
+            const featuredList = raw.map(doc => {
+                const plain = this.toPlainFeatured(doc);
+                return {
+                    ...plain,
+                    serviceType: this.formatServiceType(plain.serviceType)
+                };
+            });
 
             return featuredList;
 
@@ -247,11 +219,51 @@ export default class featuredServices {
                 throw new AppError({ message: "Featured project not found", status: 404 });
             }
 
-            return featuredProject;
+            const plain = this.toPlainFeatured(featuredProject);
+            return {
+                ...plain,
+                serviceType: this.formatServiceType(plain.serviceType)
+            };
         } 
         catch (error) {
             throw error;
         }
     };
 
+    getByServiceType = async (req) => {
+        try {
+            const { serviceType } = req.params;
+
+            const allowed = ["business_website", "internal_tool", "automated_workflow"]
+
+            if (!allowed.includes(serviceType)) {
+                throw new AppError({
+                    message: 'Invalid service.',
+                    status: 400
+                });
+            }
+
+            const raw = await Featured.find({
+                serviceType: serviceType,
+                status: 'published'
+            });
+
+            if (!raw.length) {
+                throw new AppError({ message: "Featured project not found", status: 404 });
+            }
+
+            const featuredList = raw.map(doc => {
+                const plain = this.toPlainFeatured(doc);
+                return {
+                    ...plain,
+                    serviceType: this.formatServiceType(plain.serviceType)
+                };
+            });
+
+            return featuredList;
+        } 
+        catch (error) {
+            throw error;
+        }
+    };
 }

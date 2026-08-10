@@ -10,9 +10,19 @@ export function createRouter() {
         component: () => import('../views/Home.vue'),
       },
       {
-        path: '/project/:id',
-        name: 'project',
-        component: () => import('../views/ProjectDetails.vue'),
+        path: '/projects',
+        name: 'projects',
+        component: () => import('../views/Projects.vue'),
+      },
+      {
+        path: '/services/:type',
+        name: 'services',
+        component: () => import('../views/Services.vue'),
+      },
+      {
+        path: '/contact',
+        name: 'contact',
+        component: () => import('../views/ContactPage.vue'),
       },
     ],
   })

@@ -9,43 +9,49 @@ export const usePublicStore = defineStore('project', {
   }),
 
   actions: {
-    async getProjects() {
+    async getProjects(filter = null) {
       this.loading = true;
       this.error = null;
 
-      const raw = localStorage.getItem("featured")
-      if(raw) {
+      const raw = localStorage.getItem('featured')
+      if (raw) {
         const cached = JSON.parse(raw)
         this.projects = cached
       }
 
       try {
         const fetchOptions = {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
-          },
-        };
+            'Content-Type': 'application/json'
+          }
+        }
 
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/public?status=published`,
-          fetchOptions
-        );
+        const endpoint = filter
+          ? `${import.meta.env.VITE_API_URL}/api/public/${filter}`
+          : `${import.meta.env.VITE_API_URL}/api/public?status=published`
 
-        if (!res.ok) throw new Error("Failed to fetch projects");
+        const res = await fetch(endpoint, fetchOptions)
 
-        const data = await res.json();
-        
-        localStorage.setItem("featured", JSON.stringify(data.featuredList))
-        this.projects = data.featuredList;
+        if (!res.ok) throw new Error('Failed to fetch projects')
+
+        const data = await res.json()
+        const featuredList = Array.isArray(data.featuredList) ? data.featuredList : []
+
+        if (!filter) {
+          localStorage.setItem('featured', JSON.stringify(featuredList))
+        }
+
+        this.projects = featuredList
       } catch (error) {
-        this.error = error;
+        this.error = error
+        console.log(error)
       } finally {
-        this.loading = false;
+        this.loading = false
       }
     },
 
-    async sendEmail(form){
+    async sendEmail(form) {
       this.loading = true;
       this.error = null;
       this.success = false
@@ -54,24 +60,24 @@ export const usePublicStore = defineStore('project', {
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/api/public/email`,
           {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify(form)
           }
-        );
+        )
 
-        if (!res.ok) throw new Error("Failed to send email");
+        if (!res.ok) throw new Error('Failed to send email')
 
-        const data = await res.json();
+        const data = await res.json()
         this.success = true
-        return data.message;
+        return data.message
       } catch (error) {
-        this.error = error;
+        this.error = error
       } finally {
-        this.loading = false;
+        this.loading = false
       }
     }
-  },
+  }
 })

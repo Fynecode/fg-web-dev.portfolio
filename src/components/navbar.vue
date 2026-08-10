@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
-
-const emits = defineEmits(['openContact'])
+import { useRoute } from 'vue-router';
+import { Phone, ChevronDown } from 'lucide-vue-next';
 
 const props = defineProps({
   isNavVisible: Boolean,
@@ -13,50 +13,79 @@ const props = defineProps({
   services: String
 });
 
+const route = useRoute();
+
 const isMenuOpen = ref(false);
+const isServicesMenuOpen = ref(false);
+const servicesMenuRef = ref(null);
 
 watch(props.isNavVisible, (val) => {
-  if (!val) isMenuOpen.value = false;
+  if (!val) {
+    isMenuOpen.value = false;
+    isServicesMenuOpen.value = false;
+  }
+});
+
+watch(() => route.fullPath, () => {
+  isMenuOpen.value = false;
+  isServicesMenuOpen.value = false;
 });
 
 function closeMenu() {
   isMenuOpen.value = false;
 }
 
+function closeServicesMenu() {
+  isServicesMenuOpen.value = false;
+}
+
+function toggleServicesMenu() {
+  isServicesMenuOpen.value = !isServicesMenuOpen.value;
+}
+
+function handleClickOutside(event) {
+  if (servicesMenuRef.value && !servicesMenuRef.value.contains(event.target)) {
+    closeServicesMenu();
+  }
+}
+
 onMounted(() => {
   window.addEventListener('scroll', closeMenu);
+  window.addEventListener('click', handleClickOutside);
 
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeMenu();
+    if (e.key === 'Escape') {
+      closeMenu();
+      closeServicesMenu();
+    }
   });
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', closeMenu);
+  window.removeEventListener('click', handleClickOutside);
 });
-
-console.log(isMenuOpen.value)
 </script>
 
 <template>
   <nav
     id="fynecode-nav"
-    class="fixed top-0 left-0 w-full z-40 backdrop-blur-xl bg-[#010214]/40 border-b border-white/10 transition-all duration-300"
+    class="fixed text-text1 top-0 left-0 w-full z-40 bg-white shadow-lg transition-all duration-300"
     :class="props.isNavVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'"
   >
-    <div class="flex items-center justify-between px-6 py-4">
+    <div class="flex items-center justify-between px-6 lg:px-20 py-4">
 
       <!-- Logo -->
-      <div class="flex items-center gap-3 text-white font-bold">
+      <div class="flex items-center gap-3 font-bold">
         <img src="/logo.svg" class="h-6 w-6" />
         <span>FYNECODE</span>
       </div>
 
       <!-- Mobile Toggle Button -->
-      <div class="md:hidden flex flex-row gap-2 justify-center">
+      <div class="lg:hidden flex flex-row gap-2 justify-center items-center">
         <button
           @click="isMenuOpen = !isMenuOpen"
-          class=" text-white focus:outline-none"
+          class=" focus:outline-none"
         >
           <svg v-if="!isMenuOpen" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -67,20 +96,59 @@ console.log(isMenuOpen.value)
           </svg>
         </button>
 
-        <button class="contact-btn text-xs text-white px-3 rounded cursor-pointer hover:animate-pulse" @click="emits('openContact')">
-          Contact us
-        </button>
+        <router-link to="/contact" class="text-white contact-btn text-xs py-2 px-3 rounded cursor-pointer">
+          Book a discovery call
+        </router-link>
       </div>
-      
-      
 
       <!-- Desktop Links -->
-      <ul class="hidden md:flex gap-10 text-white">
-        <li><a :href="'#' + props.hero" :class="{'text-cyan-400': props.activeSection === props.hero}">Home</a></li>
-        <li><a :href="'#' + props.services" :class="{'text-cyan-400': props.activeSection === props.services}">Services</a></li>
-        <li><a :href="'#' + props.projects" :class="{'text-cyan-400': props.activeSection === props.projects}">Projects</a></li>
-        <li><a :href="'#' + props.process" :class="{'text-cyan-400': props.activeSection === props.process}">Our Process</a></li>
-        <li><button class="contact-btn px-3 rounded cursor-pointer hover:animate-pulse" @click="emits('openContact')">Contact us</button></li>
+      <ul class="hidden lg:flex font-semibold gap-10 items-center">
+        <li><router-link to="/" :class="{'text-primary underline underline-offset-1': route.name === 'home'}">Home</router-link></li>
+        <li class="relative" ref="servicesMenuRef">
+          <button
+            type="button"
+            class="flex items-center gap-1 cursor-pointer"
+            :class="route.path.includes('/services') ? 'text-primary underline underline-offset-1' : ''"
+            @click.stop="toggleServicesMenu"
+          >
+            Services
+            <ChevronDown class="w-4 h-4" />
+          </button>
+
+          <div
+            v-if="isServicesMenuOpen"
+            class="absolute left-0 mt-3 w-56 rounded-lg border border-slate-200 bg-white p-2 shadow-xl"
+          >
+            <router-link
+              to="/services/websites"
+              class="block rounded-md px-3 py-2 text-sm text-text1 hover:bg-slate-100 hover:text-primary"
+              @click="closeServicesMenu"
+            >
+              Business Websites
+            </router-link>
+            <router-link
+              to="/services/businesstools"
+              class="block rounded-md px-3 py-2 text-sm text-text1 hover:bg-slate-100 hover:text-primary"
+              @click="closeServicesMenu"
+            >
+              Internal Business Tools
+            </router-link>
+            <router-link
+              to="/services/workflow"
+              class="block rounded-md px-3 py-2 text-sm text-text1 hover:bg-slate-100 hover:text-primary"
+              @click="closeServicesMenu"
+            >
+              Workflow Automation
+            </router-link>
+          </div>
+        </li>
+        <li><router-link to="/projects" :class="{'text-primary underline underline-offset-1': route.name === 'projects'}">Projects</router-link></li>
+        <li>
+          <router-link to="/contact" class="text-white flex flex-row gap-1 items-center font-semibold contact-btn p-2 rounded-lg cursor-pointer">
+            <Phone class="w-4 h-4 mr-2" />
+            Let's get you online
+          </router-link>
+        </li>
       </ul>
     </div>
 
@@ -88,12 +156,29 @@ console.log(isMenuOpen.value)
     <transition name="fade">
       <div
         v-if="isMenuOpen"
-        class="md:hidden px-6 pb-6 flex flex-col gap-5 text-white bg-[#010214]/60 backdrop-blur-xl border-t border-white/10"
+        class="lg:hidden px-6 pb-6 flex flex-col gap-5"
       >
-        <a @click="closeMenu" :href="'#' + props.hero" class="py-2" :class="{'text-cyan-400': props.activeSection === props.hero}">Home</a>
-        <a @click="closeMenu" :href="'#' + props.services" class="py-2" :class="{'text-cyan-400': props.activeSection === props.services}">Services</a>
-        <a @click="closeMenu" :href="'#' + props.projects" class="py-2" :class="{'text-cyan-400': props.activeSection === props.projects}">Projects</a>
-        <a @click="closeMenu" :href="'#' + props.process" class="py-2" :class="{'text-cyan-400': props.activeSection === props.process}">Our Process</a>
+        <router-link to="/" :class="{'text-primary underline underline-offset-1': route.name === 'home'}">Home</router-link>
+
+        <div class="flex flex-col gap-2">
+          <button
+            type="button"
+            class="flex items-center justify-between text-left"
+            :class="route.path.includes('/services') ? 'text-primary underline underline-offset-1' : ''"
+            @click.stop="toggleServicesMenu"
+          >
+            <span>Services</span>
+            <ChevronDown class="w-4 h-4" />
+          </button>
+
+          <div v-if="isServicesMenuOpen" class="mt-2 flex flex-col gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm">
+            <router-link to="/services/websites" class="rounded-md px-2 py-2 text-sm text-slate-700 transition-colors hover:bg-white hover:text-primary" @click="closeServicesMenu">Business Websites</router-link>
+            <router-link to="/services/businesstools" class="rounded-md px-2 py-2 text-sm text-slate-700 transition-colors hover:bg-white hover:text-primary" @click="closeServicesMenu">Internal Business Tools</router-link>
+            <router-link to="/services/workflow" class="rounded-md px-2 py-2 text-sm text-slate-700 transition-colors hover:bg-white hover:text-primary" @click="closeServicesMenu">Workflow Automation</router-link>
+          </div>
+        </div>
+
+        <router-link to="/projects" :class="{'text-primary underline underline-offset-1': route.name === 'projects'}">Projects</router-link>
       </div>
     </transition>
   </nav>

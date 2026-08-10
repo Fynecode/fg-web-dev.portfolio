@@ -1,26 +1,33 @@
 <template>
   <section
-    class="w-screen max-sm:px-[20px] px-20 flex flex-col justify-center gap-10"
+    class="w-full px-5 py-12 sm:px-8 md:px-12 lg:px-20 flex flex-col lg:flex-row-reverse justify-center gap-8 lg:gap-10"
     aria-labelledby="projects-title"
     id="projects"
   >
     <!-- Section Header -->
-    <header class="">
+    <header class="flex w-full max-w-2xl flex-col gap-2 text-center lg:w-1/3 lg:text-left">
+      <p class="text-primary mt-2 uppercase">
+        Featured projects
+      </p>
+
       <h2
         id="projects-title"
-        class="md:text-4xl sm:text-3xl text-2xl text-white font-semibold"
+        class="md:text-4xl sm:text-3xl text-2xl  font-semibold"
       >
-        Web Development Projects & Case Studies
+        Projects we are proud to have built
       </h2>
 
-      <p class="text-white/80 mt-2 max-w-3xl mx-auto">
-        A selection of websites and web tools built by Fynecode Development for
-        startups and businesses, focused on performance, clarity, and scalability.
-      </p>
+        <router-link
+          to="/projects"
+          class="text-primary flex flex-row items-center justify-center gap-2 mt-4 hover:underline lg:justify-start"
+        >
+          View all projects
+          <ArrowRight />
+        </router-link>
     </header>
 
     <!-- Projects Grid -->
-    <div class="projects-container flex items-center w-full relative">
+    <div class="projects-container flex items-center w-full relative lg:flex-1">
       <div
         ref="container"
         class="w-full"
@@ -37,7 +44,7 @@
 
         <Loader2
           v-if="publicStore.loading"
-          class="text-secondary animate-spin"
+          class="text-primary animate-spin"
           size="108"
         />
 
@@ -53,7 +60,7 @@
 
 <script setup>
 import FeaturedProjects from '@/components/featured.projects.vue'
-import { Loader2 } from 'lucide-vue-next'
+import { Loader2, ArrowRight } from 'lucide-vue-next'
 import NotFound from '@/components/not.found.vue'
 import { usePublicStore } from '@/stores/public.store'
 import { ref, onMounted } from 'vue'
@@ -63,6 +70,6 @@ const projects = ref([])
 
 onMounted(async () => {
   await publicStore.getProjects()
-  projects.value = publicStore.projects
+  projects.value = publicStore.projects.slice(0, 2)
 })
 </script>

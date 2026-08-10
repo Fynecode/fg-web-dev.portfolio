@@ -1,93 +1,100 @@
-<template>
-  <section
-    class="w-screen min-h-screen max-sm:px-[20px] max-md:px-[60px] px-20 flex flex-col justify-center max-sm:items-center gap-10"
-    aria-labelledby="services-title"
-  >
-    <!-- Section Heading -->
-    <header>
-      <h2
-        id="services-title"
-        class="md:text-4xl sm:text-3xl text-2xl text-white font-semibold"
-      >
-        Web Development Services We Specialize In
-      </h2>
-
-    </header>
-
-    <div class="flex flex-row gap-3 text-white">
-      <button class="px-2 py-1 rounded-full cursor-pointer transition-all max-sm:text-sm" :class="projectType === 1? 'bg-secondary':'hover:text-secondary'" @click="projectType = 1">Small businesses</button>
-      <button class="px-2 py-1 rounded-full cursor-pointer transition-all max-sm:text-sm" :class="projectType === 2? 'bg-secondary':'hover:text-secondary'" @click="projectType = 2">E-commerce & E-learning/LMS</button>
-    </div>
-
-    <!-- Services Grid -->
-    <div
-      class="w-full"
-      role="list"
-    >
-      <div class="w-full grid gap-4 max-sm:grid-cols-1 grid-cols-2" :class="projectType === 1? '':'hidden'">
-        <InfoCards
-          role="listitem"
-          :icon="MonitorSmartphone"
-          title="Business Website Development"
-          description="For businesses that need to look credible and professional online"
-          :points="[
-            'Custom website built for clarity',
-            'Ideal if your business has no site or an outdated one',
-            'Helps customers understand your services and contact you easily'
-          ]"
-          price="4 000"
-        />
-
-        <InfoCards
-          role="listitem"
-          :icon="MonitorSmartphone"
-          title="CMS Website Development"
-          description="For growing businesses that need control over their content"
-          :points="[
-            'Website with a content management system',
-            'Update pages, services, or content without calling a developer',
-            'Built to scale as your business grows'
-          ]"
-          price="6 500"
-        />
-      </div>
-      
-      <div class="w-full grid gap-4 max-sm:grid-cols-1 grid-cols-2" :class="projectType === 2? '':'hidden'">
-        <InfoCards
-          role="listitem"
-          :icon="ShoppingCart"
-          title="E-commerce Website Development"
-          description="For businesses that want to sell products online"
-          :points="[
-            'Online store with product and store management',
-            'Secure checkout and mobile friendly design',
-            'Designed for reliability'
-          ]"
-          price="8 500"
-        />
-
-        <InfoCards
-          role="listitem"
-          :icon="GraduationCap"
-          title="E-learning/LMS Development"
-          description="For schools, trainers, and organizations delivering online learning"
-          :points="[
-            'Structured course systems with user accounts',
-            'Designed for clarity, progress, and long-term use',
-            'Suitable for training programs and institusions'
-          ]"
-          price="10 000"
-        />
-      </div>
-      
-    </div>
-  </section>
-</template>
-
 <script setup>
-import { ref } from 'vue';
-import InfoCards from '@/components/info.cards.vue'
-import { MonitorSmartphone, ShoppingCart, GraduationCap } from 'lucide-vue-next'
+import { useRoute } from 'vue-router';
+import { onMounted, ref, watch } from 'vue';
+import HeroSection from './servicespage/HeroSection.vue';
+import ServicesSection from './servicespage/ServicesSection.vue';
+import PromotionsSection from './servicespage/PromotionsSection.vue';
+import ProjectsSection from './ProjectsSection.vue';
+import Footer from './Footer.vue';
+import navbar from '@/components/navbar.vue';
 
-const projectType = ref(1)
+const route = useRoute()
+const serviceType = ref(route.params.type || '')
+const isNavVisible = ref(true);
+const activeSection = ref('hero');
+const toggleForm = ref(false)
+
+watch(
+  () => route.params.type,
+  (newType) => {
+    serviceType.value = newType || ''
+  },
+  { immediate: true }
+)
+
+let observer;
+  onMounted(() => {
+    const sections = [
+      document.getElementById('hero'),
+      document.getElementById('services'),
+      document.getElementById('projects'),
+      document.getElementById('process'),
+      document.getElementById('contact')
+    ];
+    observer = new window.IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            activeSection.value = entry.target.id;
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+    sections.forEach(section => {
+      if (section) observer.observe(section);
+    });
+  });
+
 </script>
+
+<template>
+    <navbar class="navbar" 
+      :isNavVisible="isNavVisible"
+      :activeSection="activeSection"
+      hero="hero"
+      projects="projects"
+      process="process"
+      services="services"
+      @open-contact="toggleForm = true"
+    />
+    <main class="home w-full flex flex-col justify-center items-center text-text1 gap-8 md:gap-10">
+        <section aria-label="Hero section" id="hero">
+            <HeroSection class="hero" :service-type="serviceType" />
+        </section>
+
+        <section class="services-section px-10 md:px-20" aria-label="Hero section" id="services">
+            <ServicesSection class="" :service-type="serviceType"/>
+        </section>
+
+        <section class="services-section" aria-label="Hero section" id="services" v-if="serviceType === 'websites'">
+            <PromotionsSection class="" />
+        </section>
+
+        <section class="services-section" aria-label="Hero section" id="services">
+            <ProjectsSection class="" />
+        </section>
+
+        <section class="cta-section w-full px-5 sm:px-8 md:px-12 lg:px-20" aria-label="Call to action" id="cta" v-fade-in>
+            <div class="cta-container w-full flex flex-col lg:flex-row justify-between items-center gap-5 p-6 sm:p-8 lg:p-10 bg-white border border-border rounded-lg">
+                <div class="cta-text text-primary text-center lg:text-left">
+                    <h2 class="text-2xl md:text-3xl font-semibold mb-2">
+                        Ready to simplify how your business runs?
+                    </h2>
+                    <p class="text-sm md:text-base">
+                        Book a discovery call and let's explore how we can help.
+                    </p>
+                </div>
+                <a
+                    href="#hero"
+                    class="bg-primary text-white w-full text-center px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors duration-300 sm:w-fit"
+                >
+                    Book a call
+                </a>
+            </div>
+        </section>
+        <footer class="footer-section" aria-label="Footer" id="contact">
+            <Footer class="" />
+        </footer>
+    </main>
+</template>

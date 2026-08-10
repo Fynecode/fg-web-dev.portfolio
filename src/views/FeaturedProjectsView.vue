@@ -152,247 +152,33 @@
             />
           </div>
 
-          <!-- Company -->
+          <!-- Service type -->
           <div>
             <label class="text-sm text-white/50 flex items-center gap-2">
-              Company
+              Service type
               <button
                 type="button"
-                @click.stop="toggleEdit('company')"
+                @click.stop="toggleEdit('serviceType')"
                 class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
               >
-                <Pencil v-if="!isEditing.company" class="w-3 h-3 pointer-events-none" />
+                <Pencil v-if="!isEditing.serviceType" class="w-3 h-3 pointer-events-none" />
                 <Eye v-else class="w-3 h-3 pointer-events-none" />
               </button>
             </label>
-            <div
-              v-if="!isEditing.company"
-              class="text-lg cursor-pointer"
-            >
-              {{ form.company }}
+
+            <div v-if="!isEditing.serviceType" class="cursor-pointer">
+              {{ form.serviceType }}
             </div>
-            <input
+
+            <select
               v-else
-              v-model="form.company"
-              type="text"
+              v-model="form.serviceType"
               class="w-full mt-1 px-3 py-2 rounded bg-white/10 text-white outline-none"
-            />
-          </div>
-
-          <!-- Scope (ARRAY) -->
-          <div>
-            <label class="text-sm text-white/50 flex items-center gap-2">
-              Scope
-              <button
-                @click="addToArray('scope')"
-                class="px-2 py-1 bg-white/10 rounded hover:bg-white/20 transition text-sm"
-              >
-                +
-              </button>
-            </label>
-
-            <div class="flex flex-wrap gap-2 mt-2">
-              <div
-                v-for="(item, index) in form.scope"
-                :key="'scope-' + index"
-                class="flex items-center bg-white/10 px-3 py-1 rounded"
-              >
-                <span v-if="!isEditing.scope[index]" class="flex items-center gap-2">
-                  <span>{{ item }}</span>
-                  <button
-                    type="button"
-                    @click.stop="toggleArrayEdit('scope', index)"
-                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
-                  >
-                    <Pencil class="w-3 h-3 pointer-events-none" />
-                  </button>
-                </span>
-
-                <span v-else class="flex items-center gap-2">
-                  <input
-                    v-model="form.scope[index]"
-                    @blur="stopArrayEdit('scope', index)"
-                    class="bg-transparent outline-none text-white w-24"
-                  />
-                  <button
-                    type="button"
-                    @click.stop="toggleArrayEdit('scope', index)"
-                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
-                  >
-                    <Eye class="w-3 h-3 pointer-events-none" />
-                  </button>
-                </span>
-
-                <button
-                  @click="removeFromArray('scope', index)"
-                  class="ml-2 text-red-400 hover:text-red-500"
-                >
-                  <X class="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tags ARRAY -->
-          <div>
-            <label class="text-sm text-white/50 flex items-center gap-2">
-              Tags
-              <button
-                @click="addToArray('tags')"
-                class="px-2 py-1 bg-white/10 rounded hover:bg-white/20 transition text-sm"
-              >
-                +
-              </button>
-            </label>
-
-            <div class="flex flex-wrap gap-2 mt-2">
-              <div
-                v-for="(item, index) in form.tags"
-                :key="'tag-' + index"
-                class="flex items-center bg-white/10 px-3 py-1 rounded"
-              >
-                <span v-if="!isEditing.tags[index]" class="flex items-center gap-2">
-                  <span>{{ item }}</span>
-                  <button
-                    type="button"
-                    @click.stop="toggleArrayEdit('tags', index)"
-                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
-                  >
-                    <Pencil class="w-3 h-3 pointer-events-none" />
-                  </button>
-                </span>
-
-                <span v-else class="flex items-center gap-2">
-                  <input
-                    v-model="form.tags[index]"
-                    @blur="stopArrayEdit('tags', index)"
-                    class="bg-transparent outline-none text-white w-24"
-                  />
-                  <button
-                    type="button"
-                    @click.stop="toggleArrayEdit('tags', index)"
-                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
-                  >
-                    <Eye class="w-3 h-3 pointer-events-none" />
-                  </button>
-                </span>
-
-                <button
-                  @click="removeFromArray('tags', index)"
-                  class="ml-2 text-red-400 hover:text-red-500"
-                >
-                  <X class="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- DeliveredFeats ARRAY -->
-          <div>
-            <label class="text-sm text-white/50 flex items-center gap-2">
-              Delivered Features
-              <button
-                @click="addToArray('deliveredFeats')"
-                class="px-2 py-1 bg-white/10 rounded hover:bg-white/20 transition text-sm"
-              >
-                +
-              </button>
-            </label>
-
-            <div class="flex flex-wrap gap-2 mt-2">
-              <div
-                v-for="(item, index) in form.deliveredFeats"
-                :key="'feat-' + index"
-                class="flex items-center bg-white/10 px-3 py-1 rounded"
-              >
-                <span v-if="!isEditing.deliveredFeats[index]" class="flex items-center gap-2">
-                  <span>{{ item }}</span>
-                  <button
-                    type="button"
-                    @click.stop="toggleArrayEdit('deliveredFeats', index)"
-                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
-                  >
-                    <Pencil class="w-3 h-3 pointer-events-none" />
-                  </button>
-                </span>
-
-                <span v-else class="flex items-center gap-2">
-                  <input
-                    v-model="form.deliveredFeats[index]"
-                    @blur="stopArrayEdit('deliveredFeats', index)"
-                    class="bg-transparent outline-none text-white w-24"
-                  />
-                  <button
-                    type="button"
-                    @click.stop="toggleArrayEdit('deliveredFeats', index)"
-                    class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
-                  >
-                    <Eye class="w-3 h-3 pointer-events-none" />
-                  </button>
-                </span>
-
-                <button
-                  @click="removeFromArray('deliveredFeats', index)"
-                  class="ml-2 text-red-400 hover:text-red-500"
-                >
-                  <X class="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Challenges -->
-          <div>
-            <label class="text-sm text-white/50 flex items-center gap-2">
-              Challenges
-              <button
-                type="button"
-                @click.stop="toggleEdit('challenges')"
-                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
-              >
-                <Pencil v-if="!isEditing.challenges" class="w-3 h-3 pointer-events-none" />
-                <Eye v-else class="w-3 h-3 pointer-events-none" />
-              </button>
-            </label>
-            <div
-              v-if="!isEditing.challenges"
-              class="cursor-pointer whitespace-pre-line"
             >
-              {{ form.challenges || "Add challenges..." }}
-            </div>
-            <textarea
-              v-else
-              v-model="form.challenges"
-              rows="3"
-              class="w-full mt-1 px-3 py-2 rounded bg-white/10 text-white outline-none"
-            ></textarea>
-          </div>
-
-          <!-- Solution -->
-          <div>
-            <label class="text-sm text-white/50 flex items-center gap-2">
-              Solution
-              <button
-                type="button"
-                @click.stop="toggleEdit('solution')"
-                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
-              >
-                <Pencil v-if="!isEditing.solution" class="w-3 h-3 pointer-events-none" />
-                <Eye v-else class="w-3 h-3 pointer-events-none" />
-              </button>
-            </label>
-            <div
-              v-if="!isEditing.solution"
-              class="cursor-pointer whitespace-pre-line"
-            >
-              {{ form.solution || "Add solution..." }}
-            </div>
-            <textarea
-              v-else
-              v-model="form.solution"
-              rows="3"
-              class="w-full mt-1 px-3 py-2 rounded bg-white/10 text-white outline-none"
-            ></textarea>
+              <option value="business_website">Business website</option>
+              <option value="internal_tool">Internal tool</option>
+              <option value="automated_workflow">Automated workflow</option>
+            </select>
           </div>
 
           <!-- Status -->
@@ -421,58 +207,6 @@
               <option value="draft">Draft</option>
               <option value="published">Published</option>
             </select>
-          </div>
-
-        </section>
-
-        <!-- TESTIMONIAL -->
-        <section class="mt-20 border-t border-white/20 pt-10 space-y-4">
-          <h2 class="text-xl font-semibold">Testimonial</h2>
-
-          <!-- Picture -->
-          <div class="flex flex-col">
-            <label class="text-sm text-white/50">Client Picture</label>
-
-            <img
-              v-if="form.testimonial?.pictureUrl"
-              :src="form.testimonial.pictureUrl"
-              class="w-24 h-24 rounded-full object-cover mb-3"
-            />
-
-            <input
-              v-if="!form.testimonial?.pictureUrl"
-              type="file"
-              accept="image/*"
-              @change="onPictureUpload"
-              class="w-32 mt-1 px-3 py-2 rounded bg-white/10 text-white outline-none"
-            />
-          </div>
-
-          <!-- Feedback -->
-          <div>
-            <label class="text-sm text-white/50 flex items-center gap-2">
-              Feedback
-              <button
-                type="button"
-                @click.stop="toggleEdit('testimonialFeedback')"
-                class="p-1 rounded bg-white/10 hover:bg-white/20 transition inline-flex items-center justify-center"
-              >
-                <Pencil v-if="!isEditing.testimonialFeedback" class="w-3 h-3 pointer-events-none" />
-                <Eye v-else class="w-3 h-3 pointer-events-none" />
-              </button>
-            </label>
-            <p
-            v-if="!isEditing.testimonialFeedback"
-            >
-              {{form.testimonial.feedback || "Add feedback"}}
-            </p>
-            <textarea
-              v-else
-              v-model="form.testimonial.feedback"
-              rows="4"
-              class="w-full mt-1 px-3 py-2 rounded bg-white/10 text-white outline-none"
-            ></textarea>
-            
           </div>
 
         </section>
@@ -513,15 +247,8 @@ const isEditing = reactive({
   title: false,
   description: false,
   link: false,
-  company: false,
   status: false,
-  scope: [],
-  tags: [],
-  deliveredFeats: [],
-  challenges: false,
-  solution: false,
-  testimonialFeedback: false,
-  testimonialPicture: false,
+  serviceType: false,
   video: false,
 });
 
@@ -529,20 +256,10 @@ const isEditing = reactive({
 const form = reactive({
   title: "",
   description: "",
-  company: "",
-  scope: [],
-  tags: [],
-  deliveredFeats: [],
-  challenges: "",
-  solution: "",
   status: "draft",
   link: "",
   file: null,
-  testimonial: {
-    pictureUrl: null,
-    feedback: "",
-  }
-  
+  serviceType: ""
 });
 
 // Detect changes
@@ -601,34 +318,20 @@ async function saveChanges() {
     const normalized = {
       title: form.title ?? null,
       description: form.description ?? null,
-      company: form.company ?? null,
       link: form.link ?? null,
-      challenges: form.challenges ?? null,
-      solution: form.solution ?? null,
       status: form.status ?? null,
-      scope: Array.isArray(form.scope) ? form.scope : [],
-      tags: Array.isArray(form.tags) ? form.tags : [],
-      deliveredFeats: Array.isArray(form.deliveredFeats) ? form.deliveredFeats : [],
-      feedback: form.testimonial?.feedback ?? null,
+      serviceType: form.serviceType ?? null,
       file: form.file ?? null,
-      picture: form.testimonial?.pictureUrl ?? null
     };
 
     const fd = new FormData();
 
     fd.append("title", normalized.title)
     fd.append("description", normalized.description)
-    fd.append("company", normalized.company)
-    fd.append("scope", JSON.stringify(normalized.scope))
-    fd.append("tags", JSON.stringify(normalized.tags))
-    fd.append("deliveredFeats", JSON.stringify(normalized.deliveredFeats))
-    fd.append("challenges", normalized.challenges)
-    fd.append("solution", normalized.solution)
     fd.append("status", normalized.status)
     fd.append("link", normalized.link)
     fd.append("file", normalized.file)
-    fd.append("picture", normalized.picture)
-    fd.append("feedback", normalized.feedback)
+    fd.append("serviceType", normalized.serviceType)
 
     await featuredStore.updateFeaturedProject(id.value, fd);
 
@@ -663,34 +366,7 @@ onMounted(async () => {
 
   // Copy project into editable form
   const cloned = JSON.parse(JSON.stringify(project.value));
-  const toArray = (val) => {
-    if (Array.isArray(val)) return val;
-    if (val === null || val === undefined || val === 'null' || val === '') return [];
-    if (typeof val === 'string') {
-      const trimmed = val.trim();
-      if (!trimmed) return [];
-      if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-        try {
-          const parsed = JSON.parse(trimmed);
-          return Array.isArray(parsed) ? parsed : [];
-        } catch {
-          return [];
-        }
-      }
-      return trimmed.split(',').map(s => s.trim()).filter(Boolean);
-    }
-    return [];
-  };
-
-  cloned.scope = toArray(cloned.scope);
-  cloned.tags = toArray(cloned.tags);
-  cloned.deliveredFeats = toArray(cloned.deliveredFeats);
 
   Object.assign(form, cloned);
-  // Testimonial fields
-  if (project.value.testimonial) {
-    form.testimonial.feedback = project.value.testimonial.feedback || "";
-    form.testimonial.pictureUrl = project.value.testimonial.pictureUrl || "";
-  }
 });
 </script>

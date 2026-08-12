@@ -259,7 +259,7 @@ const form = reactive({
   status: "draft",
   link: "",
   file: null,
-  serviceType: ""
+  serviceType: "business_website" || "internal_tool" || "automated_workflow",
 });
 
 // Detect changes
@@ -277,39 +277,11 @@ function toggleEdit(field) {
   isEditing[field] = !isEditing[field];
 }
 
-function enableArrayEdit(field, index) {
-  isEditing[field][index] = true;
-}
-
-function toggleArrayEdit(field, index) {
-  isEditing[field][index] = !isEditing[field][index];
-}
-
-function stopArrayEdit(field, index) {
-  isEditing[field][index] = false;
-}
-
-function addToArray(field) {
-  form[field].push("");
-  isEditing[field].push(true);
-}
-
-function removeFromArray(field, index) {
-  form[field].splice(index, 1);
-  isEditing[field].splice(index, 1);
-}
-
 // File uploads
 function onVideoUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
   form.file = file;
-}
-
-function onPictureUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  form.testimonial.pictureUrl = file;
 }
 
 // Save project updates

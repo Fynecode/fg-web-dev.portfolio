@@ -34,7 +34,6 @@ body{
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
 }
 
 .contact-btn{
@@ -62,24 +61,24 @@ body{
   transform: none;
 }
 
-/* body::-webkit-scrollbar {
+body::-webkit-scrollbar {
   width: 8px;
 }
 
 body::-webkit-scrollbar-track {
-  background: var(--off-color);
+  background: #c5c4c4;
   border-radius: 10px;
 }
 
 body::-webkit-scrollbar-thumb {
-  background: var(--secondary);
+  background: linear-gradient(90deg, #1459cb, #8b008b, #8b008b, #8b008b);
   border-radius: 4px;
   transition: all 0.3s ease-in-out;
 }
 
 body::-webkit-scrollbar-thumb:hover {
-  background: #0458c7;
-} */
+  background: linear-gradient(90deg, #1459cb, #8b008b, #8b008b, #8b008b);
+}
 
 @media (max-width: 1023px) {
 

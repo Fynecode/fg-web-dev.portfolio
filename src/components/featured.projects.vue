@@ -1,9 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import { ArrowRightIcon } from 'lucide-vue-next'
-import { RouterLink } from 'vue-router'
 
-const props = defineProps({
+defineProps({
   project: {
     type: Object,
     required: true
@@ -66,6 +65,7 @@ function pauseVideo() {
         {{ project.serviceType }}
       </p>
       <a
+        v-if="project.link"
         :href="project.link"
         class="cursor-pointer text-sm text-text2 hover:text-primary transition-colors duration-300"
       >

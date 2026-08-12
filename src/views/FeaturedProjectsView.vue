@@ -175,9 +175,9 @@
               v-model="form.serviceType"
               class="w-full mt-1 px-3 py-2 rounded bg-white/10 text-white outline-none"
             >
-              <option value="business_website">Business website</option>
-              <option value="internal_tool">Internal tool</option>
-              <option value="automated_workflow">Automated workflow</option>
+              <option value="business_website">business_website</option>
+              <option value="internal_tool">internal_tool</option>
+              <option value="automated_workflow">automated_workflow</option>
             </select>
           </div>
 

@@ -9,51 +9,52 @@
       @open-contact="toggleForm = true"
     />
   
-  <main class="home w-full flex flex-col justify-center items-center text-text1 gap-8 md:gap-10">
+  <main class="home w-full flex flex-col justify-center items-center text-text1">
     <section class="home-section w-full" aria-label="Hero section" id="hero">
       <Hero class="hero" />
     </section>
 
-    <section class="services-section" aria-label="How Fynecode Development can help businesses" id="services" v-fade-in>
+    <section class="w-full pb-20" aria-label="Services" v-fade-in>
+      <ServiceStrip />
+    </section>
+
+    <section class="w-full pb-20" aria-label="How Fynecode Development can help businesses" id="services" v-fade-in>
       <Services />
     </section>
 
-    <section class="promotions-section px-5 md:px-20" aria-label="How Fynecode Development can help businesses" id="promotions" v-fade-in>
-      <Promotions />
+    <section class="w-full pb-20 pt-4" aria-label="Fynecode approach" v-fade-in>
+      <div class="mx-auto w-full max-w-[1160px] px-5 text-center sm:px-8 md:px-12 lg:px-20">
+        <p class="gradient1 text-6xl font-extrabold leading-none">&ldquo;</p>
+        <h2 class="mx-auto mt-4 max-w-xl text-[clamp(1.5rem,3vw,2rem)] font-bold leading-relaxed">Great solutions start with great <span class="gradient1">conversations.</span></h2>
+        <div class="mx-auto mt-5 h-1 w-16 rounded-full bg-[var(--brand-gradient)]"></div>
+      </div>
     </section>
 
-    <section class="process-section" aria-label="Our process" id="process" v-fade-in>
+    <section class="w-full pb-20" aria-label="Our process" id="process" v-fade-in>
       <Process />
     </section>
 
-    <section class="custom-section w-full" aria-label="Is custom software right for your business?" id="custom" v-fade-in>
-      <CustomSoftware />
+    <section class="w-full pb-20" aria-label="Signs you need a better solution" id="custom" v-fade-in>
+      <Signals />
     </section>
 
     <section class="projects-section w-full" aria-label="Featured projects" id="projects" v-fade-in>
       <ProjectsView />
     </section>
 
-    <section class="cta-section w-full px-5 sm:px-8 md:px-12 lg:px-20" aria-label="Call to action" id="cta" v-fade-in>
-      <div class="cta-container w-full flex flex-col lg:flex-row justify-between items-center gap-5 p-6 sm:p-8 lg:p-10 bg-white border border-border rounded-lg">
-        <div class="cta-text text-primary text-center lg:text-left">
-          <h2 class="text-2xl md:text-3xl font-semibold mb-2">
-            Ready to simplify how your business runs?
-          </h2>
-          <p class="text-sm md:text-base">
-            Book a discovery call and let's explore how we can help.
-          </p>
+    <section class="w-full px-5 pb-20 sm:px-8 md:px-12 lg:px-20" aria-label="Call to action" id="cta" v-fade-in>
+      <div class="mx-auto w-full max-w-[1160px]">
+        <div class="flex flex-col items-start justify-between gap-8 rounded-3xl contact-btn p-8 text-white sm:p-10 lg:flex-row lg:items-center lg:px-14">
+          <div>
+            <h2 class="max-w-lg text-2xl font-bold">Let's build the right solution for your business.</h2>
+            <p class="mt-2 text-sm text-white/85">Book a discovery call and let's start the conversation.</p>
+          </div>
+          <router-link to="/contact" class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#8a3fe0] transition-transform hover:-translate-y-0.5 sm:w-auto">Book a discovery call</router-link>
         </div>
-        <a
-          href="#hero"
-          class="bg-primary text-white w-full text-center px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors duration-300 sm:w-fit"
-        >
-          Book a call
-        </a>
       </div>
     </section>
 
-    <section class="footer-section" aria-label="Footer" id="contact">
+    <section class="mt-8 w-full border-t border-[#e6e8f2] bg-white p-8 text-[#101f3d]" aria-label="Footer" id="contact">
       <Footer />
     </section>
   </main>
@@ -66,8 +67,8 @@
   import Footer from './Footer.vue';
   import navbar from '@/components/navbar.vue';
   import Services from './homepage/ServicesSection.vue';
-  import CustomSoftware from './homepage/CustomSoftwareSection.vue';
-  import Promotions from './homepage/PromotionsSection.vue'
+  import ServiceStrip from './homepage/ServiceStrip.vue';
+  import Signals from './homepage/SignalsSection.vue';
   import { ref, onMounted } from 'vue';
 
   const isNavVisible = ref(true);

@@ -1,190 +1,128 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
-import { ArrowRight, Globe, CogIcon, Workflow, Telescope, Cpu, LifeBuoy } from 'lucide-vue-next'
+import { onMounted, ref, watch } from 'vue'
+import { ArrowRight, CogIcon, Cpu, Globe, LifeBuoy, Phone, Telescope, Workflow } from 'lucide-vue-next'
+
 const props = defineProps({
-    serviceType: {
-        type: String,
-        required: true
-    }
+  serviceType: {
+    type: String,
+    required: true,
+  },
 })
 
 const info = ref({})
 
 const serviceInfo = {
-    websites: {
-        icon: Globe,
-        title: 'Business websites',
-        header: 'Create a stronger first impression.',
-        desc: 'Professional websites that build trust, showcase your services and help customers take the next step.',
-    },
-    internalTools: {
-        icon: CogIcon,
-        title: 'Internal business tools',
-        header: 'Build software that fits your business',
-        desc: 'Custom business systems designed around your processes, helping you stay organized as your business grows',
-    },
-    workflow: {
-        icon: Workflow,
-        title: 'Workflow automation',
-        header: 'Spend less time on repetitive work',
-        desc: 'Automate everyday tasks and connect your existing tools to improve efficiency and reduce manual effort.',
-    }
+  websites: {
+    icon: Globe,
+    title: 'Our Services',
+    header: 'Web Development',
+    desc: 'We design and build fast, reliable websites that represent your business well and make it easy for customers to take action.',
+    image: '/imgs/website_service.png',
+  },
+  businesstools: {
+    icon: CogIcon,
+    title: 'Our Services',
+    header: 'Internal Business Tools',
+    desc: 'Custom business systems designed around your processes, helping you stay organized as your business grows.',
+    image: '/imgs/website_service.png',
+  },
+  workflow: {
+    icon: Workflow,
+    title: 'Our Services',
+    header: 'Workflow Automation',
+    desc: 'Automate everyday tasks and connect your existing tools to improve efficiency and reduce manual effort.',
+    image: '/imgs/website_service.png',
+  },
 }
 
-const service = async () => {
-    switch (props.serviceType) {
-        case 'websites':
-                info.value = serviceInfo.websites
-            break;
-        case 'businesstools':
-                info.value = serviceInfo.internalTools
-            break;
-        case 'workflow':
-                info.value = serviceInfo.workflow
-            break;
-        default:
-            info.value = {}
-            break;
-    }
+const service = () => {
+  info.value = serviceInfo[props.serviceType] || serviceInfo.websites
 }
 
 watch(
   () => props.serviceType,
-  async () => {
-    await service()
-  },
-  { immediate: true }
+  () => service(),
+  { immediate: true },
 )
 
-onMounted(async () => {
-    await service()
-})
+onMounted(() => service())
 </script>
 
 <template>
   <section
-    class="w-full min-h-screen px-5 py-24 sm:px-8 md:px-12 lg:px-20 flex flex-col lg:flex-row justify-center gap-12 lg:gap-10 relative overflow-hidden bg-white"
+    class="w-full bg-[#fafafc] px-5 pb-16 pt-28 sm:px-8 md:px-12 lg:px-20 lg:pb-20"
     aria-labelledby="hero-heading"
   >
-
-  <div
-  class="absolute
-    -right-32
-    top-1/2
-    h-[320px]
-    w-[420px]
-    sm:h-[420px]
-    sm:w-[560px]
-    lg:right-0
-    lg:top-[20%]
-    lg:h-[400px]
-    lg:w-[600px]
-    -translate-x-1/5
-    -translate-y-1/5
-    rounded-full
-    bg-primary/40
-    blur-[120px]
-    lg:blur-[180px]">
-  </div>
-
-  <div
-  class="absolute
-    -right-24
-    lg:top-1/4
-    top-1/3
-    h-[280px]
-    w-[320px]
-    sm:h-[340px]
-    sm:w-[420px]
-    lg:right-0
-    lg:h-[420px]
-    lg:w-[520px]
-    rounded-full
-    bg-secondary/40
-    blur-[120px]
-    lg:blur-[180px]">
-  </div>
-
-  <div
-  class="absolute
-    -right-40
-    top-3/4
-    h-[340px]
-    w-[340px]
-    sm:h-[440px]
-    sm:w-[440px]
-    lg:right-0
-    lg:top-0
-    lg:h-[650px]
-    lg:w-[650px]
-    rounded-full
-    bg-gradient-to-br
-    from-primary/20
-    to-secondary/25
-    blur-[140px]
-    lg:blur-[220px]">
-  </div>
-
-    <!-- Hero Content -->
-    <div class="relative z-10 flex w-full max-w-2xl flex-col gap-7 lg:items-start lg:text-left lg:gap-7 lg:flex-1">
-        <header>
-            <div class="flex flex-row items-center gap-2 text-primary">
-                <div class="p-2 rounded-full bg-primary/10">
-                    <component v-if="serviceType && info.icon" :is="info.icon" />
-                </div>
-                <p class="uppercase">{{ info.title }}</p>
-            </div>
-            <h1
-                id="hero-heading"
-                class="gradient1 text-3xl font-bold leading-tight sm:text-4xl md:text-4xl lg:text-5xl"
-            >
-                {{info.header}}
-            </h1>
+    <div class="mx-auto grid w-full max-w-[1160px] items-center gap-10 lg:grid-cols-2 lg:gap-14">
+      <div class="relative z-10 flex w-full max-w-2xl flex-col items-start gap-7">
+        <header class="flex flex-col items-start gap-4">
+          <div class="grid size-[76px] place-items-center rounded-[22px] bg-gradient-to-br from-[#3c64f4]/10 to-[#e31c79]/10 text-[#8a3fe0]">
+            <component v-if="info.icon" :is="info.icon" class="size-10" stroke-width="1.8" />
+          </div>
+          <p class="text-xs font-bold uppercase tracking-[0.16em] text-[#e31c79]">{{ info.title }}</p>
+          <h1 id="hero-heading" class="text-4xl font-bold leading-tight tracking-normal text-[#101f3d] sm:text-5xl">
+            {{ info.header }}
+          </h1>
         </header>
-      <p
-        class="max-w-xl text-base leading-7 sm:text-lg md:text-xl font-display"
-      >
-        {{ info.desc }}
-      </p>
 
-      <div class="flex w-full flex-col items-stretch gap-3 sm:w-fit sm:flex-row sm:items-center sm:gap-5">
-        <router-link
-          to="/contact"
-          class="contact-btn flex flex-row items-center justify-center gap-2 rounded-lg px-4 py-3 text-white transition-all sm:py-2"
-          aria-label="View web development projects by Fynecode"
-        >
-          What do you need
-          <ArrowRight size="20" />
-        </router-link>
-        <router-link
-          to="/projects"
-          class="flex flex-row items-center justify-center gap-2 rounded-lg p-3 text-primary hover:text-primary/80 transition-all sm:p-2"
-          aria-label="View web development projects by Fynecode"
-        >
-          See our work
-        </router-link>
-        
-      </div>
+        <p class="max-w-xl text-base leading-7 text-[#4a5573] sm:text-lg">
+          {{ info.desc }}
+        </p>
 
-      <div class="hidden lg:flex flex-row w-fit gap-5 text-sm">
-        <div class="flex flex-row-reverse gap-2 font-semibold items-center">
-          <p>Discovery first approach</p>
-          <Telescope class="text-primary bg-primary/10 p-1 rounded"/>
+        <div class="flex w-full flex-col items-stretch gap-3 sm:w-fit sm:flex-row sm:items-center sm:gap-4">
+          <router-link
+            to="/contact"
+            class="contact-btn inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(138,63,224,0.55)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_28px_-10px_rgba(138,63,224,0.65)]"
+          >
+            <Phone size="17" />
+            Book a discovery call
+          </router-link>
+          <router-link
+            to="/projects"
+            class="inline-flex items-center justify-center gap-2 rounded-full border border-[#e6e8f2] bg-white px-6 py-3.5 text-sm font-semibold text-[#101f3d] transition-all hover:-translate-y-0.5 hover:text-[#8a3fe0]"
+          >
+            See our work
+            <ArrowRight size="17" />
+          </router-link>
         </div>
-        <div class="flex flex-row-reverse gap-2 font-semibold items-center">
-          <p>Tailored solutions</p>
-          <Cpu class="text-primary bg-primary/10 p-1 rounded"/>
-        </div>
-        <div class="flex flex-row-reverse gap-2 font-semibold items-center">
-          <p>Ongoing support</p>
-          <LifeBuoy class="text-primary bg-primary/10 p-1 rounded"/>
+
+        <div class="hidden flex-row gap-5 text-sm lg:flex">
+          <div class="flex flex-row-reverse items-center gap-2 font-semibold">
+            <p>Discovery first approach</p>
+            <Telescope class="rounded bg-[#3c64f4]/10 p-1 text-[#3c64f4]" />
+          </div>
+          <div class="flex flex-row-reverse items-center gap-2 font-semibold">
+            <p>Tailored solutions</p>
+            <Cpu class="rounded bg-[#8a3fe0]/10 p-1 text-[#8a3fe0]" />
+          </div>
+          <div class="flex flex-row-reverse items-center gap-2 font-semibold">
+            <p>Ongoing support</p>
+            <LifeBuoy class="rounded bg-[#e31c79]/10 p-1 text-[#e31c79]" />
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Contact form -->
-    <div class="relative z-10 w-full max-w-xl lg:flex-1 lg:max-w-none">
-      <img src="/imgs/website_service.png" class="scale-[150%] -translate-x-[20%]"/>
+      <div class="relative min-h-[280px] overflow-hidden rounded-3xl bg-gradient-to-br from-[#3c64f4]/10 to-[#e31c79]/10 sm:min-h-[360px] lg:min-h-[450px]">
+        <div class="service-dots absolute inset-0"></div>
+        <div class="absolute inset-0 grid place-items-center p-10">
+          <img :src="info.image" alt="" class="relative z-10 max-h-[360px] w-full object-contain drop-shadow-2xl" />
+        </div>
+        <component
+          v-if="info.icon"
+          :is="info.icon"
+          class="absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 text-[#8a3fe0]/10 sm:size-56"
+          stroke-width="1.5"
+        />
+      </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+.service-dots {
+  background-image: radial-gradient(#8a3fe0 1px, transparent 1.5px);
+  background-size: 16px 16px;
+  opacity: 0.45;
+  mask-image: radial-gradient(circle at 75% 25%, black, transparent 65%);
+}
+</style>

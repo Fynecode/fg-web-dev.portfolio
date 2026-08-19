@@ -1,25 +1,25 @@
 <template>
   <section
-    class="w-full px-5 py-12 sm:px-8 md:px-12 lg:px-20 flex flex-col lg:flex-row-reverse justify-center gap-8 lg:gap-10"
+    class="mx-auto flex w-full max-w-[1160px] flex-col justify-center gap-8 px-5 py-12 sm:px-8 md:px-12 lg:flex-row-reverse lg:gap-10 lg:px-20"
     aria-labelledby="projects-title"
     id="projects"
   >
     <!-- Section Header -->
     <header class="flex w-full max-w-2xl flex-col gap-2 text-center lg:w-1/3 lg:text-left">
-      <p class="text-primary mt-2 uppercase">
+      <p class="mt-2 text-xs font-bold uppercase tracking-[0.15em] text-[#e31c79]">
         Featured projects
       </p>
 
       <h2
         id="projects-title"
-        class="md:text-4xl sm:text-3xl text-2xl  font-semibold"
+        class="text-2xl font-bold sm:text-3xl md:text-4xl"
       >
         Projects we are proud to have built
       </h2>
 
         <router-link
           to="/projects"
-          class="text-primary flex flex-row items-center justify-center gap-2 mt-4 hover:underline lg:justify-start"
+          class="mt-4 flex flex-row items-center justify-center gap-2 font-semibold text-[#e31c79] hover:underline lg:justify-start"
         >
           View all projects
           <ArrowRight />
@@ -30,7 +30,7 @@
     <div class="projects-container flex items-center w-full relative lg:flex-1">
       <div
         ref="container"
-        class="w-full"
+          class="w-full"
         :class="publicStore.loading || projects.length === 0 ? 'flex justify-center': 'grid md:grid-cols-2 grid-cols-1 gap-5'"
         role="list"
       >

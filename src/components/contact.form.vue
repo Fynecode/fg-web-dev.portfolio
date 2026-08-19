@@ -1,209 +1,170 @@
 <script setup>
-    import { Phone, CheckCircle, Loader2 } from 'lucide-vue-next';
-    import { usePublicStore } from '@/stores/public.store'
-    import { computed, reactive, ref } from 'vue';
+import { CheckCircle, Loader2, Send } from 'lucide-vue-next'
+import { usePublicStore } from '@/stores/public.store'
+import { reactive, ref } from 'vue'
 
-    const props = defineProps({
-        showPackage: {
-            type: Boolean,
-            default: false,
-        },
-    })
+defineProps({
+  showPackage: {
+    type: Boolean,
+    default: false,
+  },
+})
 
-    const publicStore = usePublicStore()
-    const res = ref()
+const publicStore = usePublicStore()
+const res = ref()
 
-    const packageDeliverables = {
-        Launch: [
-            'A polished one-page or starter website experience',
-            'Core brand and messaging layout',
-            'Responsive design for mobile, tablet and desktop',
-            'Contact and CTA flow that turns visitors into enquiries'
-        ],
-        Growth: [
-            'A multi-section business website experience',
-            'Conversion-focused landing pages and content flow',
-            'Structured service/product sections and testimonial areas',
-            'Performance, SEO and integration improvements'
-        ],
-        Custom: [
-            'A tailored technical solution aligned to your workflow',
-            'Advanced dashboards, forms, integrations or client portals',
-            'A discovery and solution mapping process for your exact needs',
-            'Launch support, QA and implementation guidance'
-        ]
-    }
+const form = reactive({
+  email: '',
+  phone: '',
+  name: '',
+  businessName: '',
+  service: '',
+  message: '',
+})
 
-    const form = reactive({
-        email: '',
-        phone: '',
-        name: '',
-        businessName: '',
-        package: '',
-        message: ''
-    })
+async function sendEmail() {
+  const payload = {
+    name: form.name,
+    email: form.email,
+    message: form.phone ? `${form.message}\n\nPhone: ${form.phone}` : form.message,
+    bname: form.businessName,
+    bactions: form.service || form.phone,
+    package: form.service,
+  }
 
-    const selectedPackageDeliverables = computed(() => {
-        if (!form.package) {
-            return []
-        }
-
-        return packageDeliverables[form.package] || []
-    })
-
-    async function sendEmail(){
-        const payload = {
-            name: form.name,
-            email: form.email,
-            message: form.phone ? `${form.message}\n\nPhone: ${form.phone}` : form.message,
-            bname: form.businessName,
-            bactions: form.phone,
-            package: form.package,
-        }
-
-        res.value = await publicStore.sendEmail(payload)
-    }
+  res.value = await publicStore.sendEmail(payload)
+}
 </script>
 
 <template>
-    <div class="w-full py-10">
-        <form @submit.prevent class="ml-auto rounded-lg text-text1 w-full lg:w-[80%] h-full backdrop-blur-2xl bg-white/60 p-4 flex flex-col justify-center items-center gap-6">
-            <div class="w-full flex flex-col gap-1">
-                <h2 class="text-2xl font-semibold">Let's talk about your business</h2>
-                <p class="text-text2">Tell us a bit about the challenges you're facing.</p>
-            </div>
-
-            <div v-if="!publicStore.success" class="w-full flex flex-col gap-1">
-                <label for="name" class="text-text2"></label>
-                <input 
-                    type="text" 
-                    name="name"
-                    id="name" 
-                    class="bg-white/80 p-2 rounded-lg w-full border border-border"
-                    placeholder="John Doe"
-                    required
-                    minlength="2"
-                    pattern="^[A-Za-z\s]+$"
-                    title="Name should only contain letters and spaces, minimum 2 characters"
-                    v-model="form.name"
-                >
-            </div>
-
-            <div v-if="!publicStore.success" class="w-full flex flex-col gap-1">
-                <label for="businessName" class="text-text2"></label>
-                <input 
-                    type="text" 
-                    name="businessName"
-                    id="businessName"
-                    placeholder="Business name"
-                    class="bg-white/80 p-2 rounded-lg w-full border border-border"
-                    required
-                    title="Please enter a valid business name"
-                    v-model="form.businessName"
-                >
-            </div>
-
-            <div v-if="!publicStore.success" class="w-full flex flex-col gap-1">
-                <label for="phone" class="text-text2"></label>
-                <input 
-                    type="tel"
-                    name="phone" 
-                    id="phone" 
-                    placeholder="Your phone number"
-                    class="bg-white/80 p-2 rounded-lg w-full border border-border"
-                    required
-                    title="Please enter a valid phone number"
-                    v-model="form.phone"
-                >
-            </div>
-
-            <div class="w-full flex flex-col gap-4 md:flex-row md:justify-between">
-                <div v-if="!publicStore.success" class="w-full flex flex-col gap-1">
-                    <label for="email" class="text-text2"></label>
-                    <input 
-                        type="email" 
-                        name="email" 
-                        id="email" 
-                        placeholder="Your email address"
-                        class="bg-white/80 p-2 rounded-lg w-full border border-border"
-                        required
-                        title="Please enter a valid email address"
-                        v-model="form.email"
-                    >
-                </div>
-            </div>
-
-            <div v-if="props.showPackage && !publicStore.success" class="w-full flex flex-col gap-1">
-                <label for="package" class="text-text2">Select a package</label>
-                <select
-                    name="package"
-                    id="package"
-                    class="bg-white/80 p-2 rounded-lg w-full border border-border"
-                    v-model="form.package"
-                >
-                    <option value="">Choose a package</option>
-                    <option value="Launch">Launch</option>
-                    <option value="Growth">Growth</option>
-                    <option value="Custom">Custom</option>
-                </select>
-
-                <div v-if="selectedPackageDeliverables.length" class="rounded-lg border border-primary/20 bg-primary/5 p-3">
-                    <p class="mb-2 text-sm font-semibold text-primary">What is included in {{ form.package }}</p>
-                    <ul class="space-y-2 text-sm text-text2">
-                        <li v-for="deliverable in selectedPackageDeliverables" :key="deliverable" class="flex items-start gap-2">
-                            <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary"></span>
-                            <span>{{ deliverable }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div v-if="!publicStore.success" class="w-full flex flex-col gap-1">
-                <label for="message" class="text-text2">How can we help your business?</label>
-                <textarea 
-                    name="message"
-                    id="message"
-                    class="bg-white/80 p-2 rounded-lg w-full border border-border"
-                    required
-                    minlength="10"
-                    title="This field must be at least 10 characters long"
-                    v-model="form.message"
-                ></textarea>
-            </div>
-
-            <div
-                v-if="publicStore.success"
-                class="w-full h-3/5 flex flex-col gap-2 justify-center items-center">
-                <CheckCircle size="64" class="bg-green-500 p-4 rounded-full text-white"/>
-                <p>Email sent!</p>
-            </div>
-
-            <div class="w-full flex flex-row gap-4">
-                <button 
-                v-if="!publicStore.success"
-                @click="sendEmail"
-                class="text-white flex flex-row gap-1 items-center font-semibold contact-btn p-2 rounded-lg cursor-pointer"
-                >
-                <Phone v-if="!publicStore.loading" class="w-4 h-4 mr-2" />
-                <Loader2 v-if="publicStore.loading" class="animate-spin"/>
-                    Book a discovery call
-                </button>
-            </div>
-        </form>
-        
-        
+  <div id="form" class="w-full rounded-3xl border border-[#e6e8f2] bg-white px-6 py-8 shadow-[0_24px_60px_-34px_rgba(16,31,61,0.22)] sm:px-10 sm:py-10">
+    <div class="mb-7">
+      <h2 class="text-[21px] font-bold text-[#101f3d]">Send us a message</h2>
+      <p class="mt-1 text-sm text-[#4a5573]">Fill in the form and our team will follow up to schedule your discovery call.</p>
     </div>
+
+    <form @submit.prevent="sendEmail" class="flex w-full flex-col">
+      <template v-if="!publicStore.success">
+        <div class="grid gap-x-5 sm:grid-cols-2">
+          <div class="mb-5">
+            <label for="name" class="mb-2 block text-sm font-semibold text-[#101f3d]">Full name</label>
+            <input
+              id="name"
+              v-model="form.name"
+              type="text"
+              name="name"
+              class="contact-input"
+              placeholder="Jane Shikongo"
+              required
+              minlength="2"
+            >
+          </div>
+
+          <div class="mb-5">
+            <label for="businessName" class="mb-2 block text-sm font-semibold text-[#101f3d]">Company</label>
+            <input
+              id="businessName"
+              v-model="form.businessName"
+              type="text"
+              name="businessName"
+              class="contact-input"
+              placeholder="Your business name"
+            >
+          </div>
+        </div>
+
+        <div class="grid gap-x-5 sm:grid-cols-2">
+          <div class="mb-5">
+            <label for="email" class="mb-2 block text-sm font-semibold text-[#101f3d]">Email address</label>
+            <input
+              id="email"
+              v-model="form.email"
+              type="email"
+              name="email"
+              class="contact-input"
+              placeholder="you@company.com"
+              required
+            >
+          </div>
+
+          <div class="mb-5">
+            <label for="phone" class="mb-2 block text-sm font-semibold text-[#101f3d]">Phone number</label>
+            <input
+              id="phone"
+              v-model="form.phone"
+              type="tel"
+              name="phone"
+              class="contact-input"
+              placeholder="+264 81 000 0000"
+            >
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <label for="service" class="mb-2 block text-sm font-semibold text-[#101f3d]">What do you need help with?</label>
+          <select id="service" v-model="form.service" name="service" class="contact-input appearance-none bg-white">
+            <option value="">Select a service</option>
+            <option>Backend Development</option>
+            <option>Web Development</option>
+            <option>UI/UX Design</option>
+            <option>Internal Systems</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+
+        <div class="mb-5">
+          <label for="message" class="mb-2 block text-sm font-semibold text-[#101f3d]">Message</label>
+          <textarea
+            id="message"
+            v-model="form.message"
+            name="message"
+            class="contact-input min-h-36 resize-y"
+            placeholder="Tell us a little about your business and what you're looking to build..."
+            required
+            minlength="10"
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          class="contact-btn inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(138,63,224,0.55)] transition-all hover:-translate-y-0.5 disabled:cursor-default disabled:opacity-60 disabled:hover:translate-y-0"
+          :disabled="publicStore.loading"
+        >
+          <Send v-if="!publicStore.loading" size="17" />
+          <Loader2 v-else class="animate-spin" size="17" />
+          {{ publicStore.loading ? 'Sending...' : 'Send message' }}
+        </button>
+
+        <p class="mt-4 text-xs leading-5 text-[#4a5573]">
+          By submitting this form you agree to be contacted about your enquiry. We don't share your details with anyone else.
+        </p>
+      </template>
+
+      <div v-else class="flex min-h-72 w-full flex-col items-center justify-center gap-3 text-center">
+        <CheckCircle size="64" class="rounded-full bg-green-500 p-4 text-white" />
+        <p class="font-semibold text-[#101f3d]">Thanks, your message is in.</p>
+        <p class="text-sm text-[#4a5573]">We'll be in touch within one business day.</p>
+      </div>
+    </form>
+  </div>
 </template>
 
 <style scoped>
-form{
-    background:
-    rgba(255, 255, 255, 0.322);
+.contact-input {
+  width: 100%;
+  border: 1px solid #e6e8f2;
+  border-radius: 12px;
+  background-color: #fafafc;
+  padding: 13px 15px;
+  color: #101f3d;
+  font-size: 14.5px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
 
-    backdrop-filter:
-    blur(16px);
-
-    border:
-    1px solid rgba(255,255,255,.25);
+.contact-input:focus {
+  border-color: #8a3fe0;
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(138, 63, 224, 0.1);
 }
 </style>

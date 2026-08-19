@@ -1,65 +1,25 @@
-<template>
-  <section
-    class="w-full min-h-screen px-5 py-16 sm:px-8 md:px-12 lg:px-20 flex flex-col justify-center items-center gap-10"
-    aria-labelledby="services-title"
-  >
-    <!-- Section Heading -->
-    <header class="flex flex-col gap-2 text-center">
-      <p class=" font-semibold text-primary">Our services</p>
-      <h2
-        id="services-title"
-        class="md:text-4xl sm:text-3xl text-2xl font-semibold"
-      >
-        How we can help your business.
-      </h2>
-
-    </header>
-
-    <!-- Services Grid -->
-    <div
-      class="w-full"
-      role="list"
-    >
-      <div class="w-full grid grid-cols-1 gap-4 md:grid-cols-3" :class="projectType === 1? '':'hidden'">
-        <InfoCards
-          role="listitem"
-          :icon="MonitorSmartphone"
-          title="Business Websites"
-          description="Professional website that build trust, and turn visitors into customers"
-          cta="Let's get your business online"
-          :benefit="['Modern & mobile friendly', 'SEO ready', 'Built to convert visitors']"
-          route-to="services/websites"
-        />
-
-        <InfoCards
-          role="listitem"
-          :icon="Cog"
-          title="Internal Business Tools"
-          description="Custom tools that organize your operations and give you control."
-          cta="How can we help your business?"
-          :benefit="['Built around your workflow', 'Secure & scalable', 'Designed for efficiency']"
-          route-to="services/businesstools"
-        />
-
-        <InfoCards
-          role="listitem"
-          :icon="Workflow"
-          title="Workflow Automation"
-          description="Automate repetitive tasks and connect your tools so everything runs smoothly."
-          cta="Let's get that off your plate"
-          :benefit="['Automate routine tasks', 'Reduce errors', 'More time for what matters']"
-          route-to="services/workflow"
-        />
-      </div>
-      
-    </div>
-  </section>
-</template>
-
 <script setup>
-import { ref } from 'vue';
-import InfoCards from '@/components/info.cards.vue'
-import { MonitorSmartphone, Cog, Workflow } from 'lucide-vue-next'
+import { Code2, Settings2, Wrench } from 'lucide-vue-next'
 
-const projectType = ref(1)
+const services = [
+  { title: 'Custom Solutions', description: 'Scalable software solutions designed for your business.', icon: Code2 },
+  { title: 'Process Automation', description: 'Automate workflows and eliminate manual work for better results.', icon: Settings2 },
+  { title: 'Ongoing Support', description: 'We stay with you after launch and keep improving.', icon: Wrench },
+]
 </script>
+
+<template>
+  <div class="mx-auto w-full max-w-[1160px] px-5 sm:px-8 md:px-12 lg:px-20">
+    <header class="mb-10 flex flex-col items-center text-center">
+      <p class="mb-3 text-xs font-bold uppercase tracking-[0.15em] text-[#e31c79]">How we help</p>
+      <h2 class="text-[clamp(1.7rem,3vw,2.1rem)] font-bold">Ways we move your business forward</h2>
+    </header>
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <article v-for="service in services" :key="service.title" class="rounded-2xl border border-[#e6e8f2] bg-white p-6 transition-transform hover:-translate-y-1 hover:shadow-[0_20px_40px_-24px_rgba(16,31,61,0.25)]">
+        <div class="mb-4 grid size-12 place-items-center rounded-xl bg-[linear-gradient(135deg,rgba(60,100,244,0.1),rgba(227,28,121,0.1))] text-[#8a3fe0]"><component :is="service.icon" :size="24" /></div>
+        <h3 class="mb-2 text-base font-bold">{{ service.title }}</h3>
+        <p class="text-sm text-[#4a5573]">{{ service.description }}</p>
+      </article>
+    </div>
+  </div>
+</template>

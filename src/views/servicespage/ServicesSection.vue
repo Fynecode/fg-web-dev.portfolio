@@ -1,195 +1,129 @@
 <script setup>
-    import { ref, onMounted, watch } from 'vue';
-    import { Calendar, Laptop, Lock, Rocket, Star, UserCircle, FileCog, LayoutDashboard, UsersRound, Package, ClipboardList, FileText, BarChart3, CalendarDays, Workflow, Mail, MessageSquare, FileInput, RefreshCcw, BellRing, DatabaseZap, Link2, Clock3 } from 'lucide-vue-next';
-    import serviceCard from '@/components/service.card.vue';
+import { computed } from 'vue'
+import {
+  BarChart3,
+  Calendar,
+  ClipboardList,
+  DatabaseZap,
+  FileInput,
+  FileText,
+  Laptop,
+  LayoutDashboard,
+  Link2,
+  Lock,
+  Mail,
+  MessageSquare,
+  Package,
+  RefreshCcw,
+  Search,
+  Smartphone,
+  UserCircle,
+  Wrench,
+  Zap,
+} from 'lucide-vue-next'
 
-    const props = defineProps({
-        serviceType: {
-            type: String,
-            required: true
-        }
-    })
+const props = defineProps({
+  serviceType: {
+    type: String,
+    required: true,
+  },
+})
 
-    const info = ref([])
+const serviceCopy = {
+  websites: {
+    eyebrow: "What's included",
+    title: 'Everything your website needs to work',
+    sub: 'A complete build, not just design. Every project includes the following as standard.',
+    items: [
+      {
+        icon: Laptop,
+        title: 'Custom design & build',
+        desc: 'No generic templates. Every layout is designed around your brand and content.',
+      },
+      {
+        icon: Smartphone,
+        title: 'Mobile-first & responsive',
+        desc: 'Every page is built and tested across phone, tablet and desktop.',
+      },
+      {
+        icon: Zap,
+        title: 'Performance optimized',
+        desc: "Fast load times and clean code, so visitors don't bounce before it loads.",
+      },
+      {
+        icon: Search,
+        title: 'SEO foundations',
+        desc: 'Structured, indexable pages that give you a real shot at ranking.',
+      },
+      {
+        icon: Calendar,
+        title: 'Easy content management',
+        desc: 'Update text, images and pages yourself without touching code.',
+      },
+      {
+        icon: Wrench,
+        title: 'Post-launch support',
+        desc: 'We stay on to fix, tweak and improve after your site goes live.',
+      },
+    ],
+  },
+  businesstools: {
+    eyebrow: "What's included",
+    title: 'Practical tools for daily operations',
+    sub: 'Purpose-built systems that help your team organize work, track information and reduce scattered admin.',
+    items: [
+      { icon: LayoutDashboard, title: 'Dashboards', desc: 'Bring your most important business information into one clear place.' },
+      { icon: UserCircle, title: 'Client management', desc: 'Keep customer information, communication and history organized.' },
+      { icon: Package, title: 'Inventory management', desc: 'Track stock levels, purchases and product movement with greater accuracy.' },
+      { icon: ClipboardList, title: 'Project management', desc: 'Plan work, assign tasks and monitor progress from one platform.' },
+      { icon: FileText, title: 'File management', desc: 'Store, organize and quickly access important business documents.' },
+      { icon: BarChart3, title: 'Reporting & analytics', desc: 'Turn business data into clear, actionable insight.' },
+    ],
+  },
+  workflow: {
+    eyebrow: "What's included",
+    title: 'Automation that removes repetitive work',
+    sub: 'We connect the tools and tasks your business already uses so information moves without constant manual effort.',
+    items: [
+      { icon: Mail, title: 'Email automation', desc: 'Send emails automatically based on actions, schedules or customer activity.' },
+      { icon: MessageSquare, title: 'WhatsApp notifications', desc: 'Keep customers and staff informed with automated messages.' },
+      { icon: FileInput, title: 'Form processing', desc: 'Organize and route information submitted through online forms.' },
+      { icon: RefreshCcw, title: 'Data synchronization', desc: 'Keep information consistent across the tools your business uses.' },
+      { icon: DatabaseZap, title: 'Data management', desc: 'Move and organize business data without repetitive manual work.' },
+      { icon: Link2, title: 'Software integrations', desc: 'Connect existing software so information flows automatically.' },
+    ],
+  },
+}
 
-    const websiteTypes = [
-        {
-            icon: Laptop,
-            title: 'Business Websites',
-            desc: 'Professional websites that introduce your business and build trust'
-        },
-        {
-            icon: Rocket,
-            title: 'Landing pages',
-            desc: 'High-converting pages focused on turning visitors into enquiries'
-        },
-        {
-            icon: Calendar,
-            title: 'Booking websites',
-            desc: 'Allow your customers to make bookings or appointments online'
-        },
-        {
-            icon: UserCircle,
-            title: 'Portfolio websites',
-            desc: 'Showcase your work, projects and services beutifully'
-        },
-        {
-            icon: FileCog,
-            title: 'Brochure websites',
-            desc: 'Simple, effective websites that present key information clearly'
-        },
-        {
-            icon: Lock,
-            title: 'Client portals',
-            desc: 'Give your clients a secure place to access their information'
-        },
-        {
-            icon: Star,
-            title: 'Membership websites',
-            desc: 'Manage members, content and access in one central place'
-        },
-    ]
-
-    const toolTypes = [
-        {
-            icon: LayoutDashboard,
-            title: 'Dashboards',
-            desc: 'Bring your most important business information into one place with real-time dashboards and reporting'
-        },
-        {
-            icon: UsersRound,
-            title: 'Client management',
-            desc: 'Keep customer information, communication and history organized in a single system'
-        },
-        {
-            icon: Package,
-            title: 'Inventory management',
-            desc: 'Track stock levels, purchases and product movement with greater accuracy'
-        },
-        {
-            icon: ClipboardList,
-            title: 'Project management',
-            desc: 'Plan work, assign tasks and monitor project progress from one central platform'
-        },
-        {
-            icon: CalendarDays,
-            title: 'Booking & Scheduling',
-            desc: 'Manage appointments, bookings and availability more efficiently'
-        },
-        {
-            icon: FileText,
-            title: 'File management',
-            desc: 'Store, organaize and quickly access important business documents'
-        },
-        {
-            icon: BarChart3,
-            title: 'Reporting & analytics',
-            desc: 'Turn everyday business data into clear, actionable insights'
-        },
-        {
-            icon: Workflow,
-            title: 'Workflow management',
-            desc: 'Build processes that reduce manual work and keep operations running smoothly'
-        },
-    ]
-
-    const workflow = [
-        {
-            icon: Mail,
-            title: 'Email automation',
-            desc: 'Send emails automatically based on actions, schedules or customer activity'
-        },
-        {
-            icon: MessageSquare,
-            title: 'WhatsApp Notifications',
-            desc: 'Keep customers and staff informed with automated WhatsApp'
-        },
-        {
-            icon: FileInput,
-            title: 'Form processing',
-            desc: 'Automatically organize and route information submitted through online forms'
-        },
-        {
-            icon: RefreshCcw,
-            title: 'Data synchronization',
-            desc: 'Keep information consistent accross the tools your business already uses'
-        },
-        {
-            icon: BellRing,
-            title: 'Reminders & alerts',
-            desc: 'Reduce missed deadlines with automatic reminders and notifications'
-        },
-        {
-            icon: DatabaseZap,
-            title: 'Data management',
-            desc: 'Move and organize business daata without repetitive manual work'
-        },
-        {
-            icon: Link2,
-            title: 'Software integrations',
-            desc: 'Connect your existing software so information flows automatically'
-        },
-        {
-            icon: Clock3,
-            title: 'Recurring tasks',
-            desc: 'Automate routine daily, weekly or monthly business processes'
-        },
-    ]
-
-    const service = async () => {
-        switch (props.serviceType) {
-            case 'websites':
-                    info.value = websiteTypes
-                break;
-            case 'businesstools':
-                    info.value = toolTypes
-                break;
-            case 'workflow':
-                    info.value = workflow
-                break;
-            default:
-                info.value = []
-                break;
-        }
-    }
-
-    watch(
-        () => props.serviceType,
-        async () => {
-            await service()
-        },
-        { immediate: true }
-    )
-
-    onMounted(async () => {
-        await service()
-    })
+const info = computed(() => serviceCopy[props.serviceType] || serviceCopy.websites)
 </script>
 
 <template>
-    <section class="w-full flex flex-col gap-4">
-        <header class="flex flex-col gap-2 text-center">
-            <p class=" font-semibold text-primary uppercase">{{ serviceType === 'websites' ? 'Professional Websites' : serviceType === 'businesstools' ? 'Business Tools' : 'Workflow Automation' }}</p>
-            <h2
-                id="services-title"
-                class="md:text-4xl sm:text-3xl text-2xl font-semibold"
-            >
-                What we offer
-            </h2>
-        </header>
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center">
-            <serviceCard 
-                v-for="(types, index) in info"
-                :key="index"
-                :icon="types.icon"
-                :title="types.title"
-                :desc="types.desc"
-            />
-        </div>
-        
-    </section>
+  <section class="w-full bg-[#fafafc] px-5 py-12 sm:px-8 md:px-12 lg:px-20" aria-labelledby="services-title">
+    <div class="mx-auto w-full max-w-[1160px]">
+      <header class="mx-auto mb-12 flex max-w-2xl flex-col items-center text-center">
+        <p class="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-[#e31c79]">{{ info.eyebrow }}</p>
+        <h2 id="services-title" class="text-3xl font-bold tracking-normal text-[#101f3d] md:text-[1.9rem]">
+          {{ info.title }}
+        </h2>
+        <p class="mt-3 text-sm leading-6 text-[#4a5573] sm:text-base">
+          {{ info.sub }}
+        </p>
+      </header>
+
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <article
+          v-for="item in info.items"
+          :key="item.title"
+          class="h-full rounded-2xl border border-[#e6e8f2] bg-white p-7 transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_-24px_rgba(16,31,61,0.25)]"
+        >
+          <div class="mb-4 grid size-[46px] place-items-center rounded-[13px] bg-gradient-to-br from-[#3c64f4]/10 to-[#e31c79]/10 text-[#8a3fe0]">
+            <component :is="item.icon" class="size-6" stroke-width="1.9" />
+          </div>
+          <h3 class="mb-2 text-base font-bold text-[#101f3d]">{{ item.title }}</h3>
+          <p class="text-sm leading-6 text-[#4a5573]">{{ item.desc }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
 </template>
-
-<style scoped>
-
-</style>

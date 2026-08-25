@@ -104,13 +104,10 @@ onMounted(() => service())
 
       <div class="relative min-h-[280px] overflow-hidden rounded-3xl bg-gradient-to-br from-[#3c64f4]/10 to-[#e31c79]/10 sm:min-h-[360px] lg:min-h-[450px]">
         <div class="service-dots absolute inset-0"></div>
-        <div class="absolute inset-0 grid place-items-center p-10">
-          <img :src="info.image" alt="" class="relative z-10 max-h-[360px] w-full object-contain drop-shadow-2xl" />
-        </div>
         <component
           v-if="info.icon"
           :is="info.icon"
-          class="absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 text-[#8a3fe0]/10 sm:size-56"
+          class="absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 text-[#8a3fe0]/40 sm:size-56"
           stroke-width="1.5"
         />
       </div>

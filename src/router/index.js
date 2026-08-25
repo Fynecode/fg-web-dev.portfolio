@@ -1,8 +1,23 @@
-import { createRouter as _createRouter, createWebHistory, createMemoryHistory } from 'vue-router'
+import {
+  createRouter as _createRouter,
+  createWebHistory,
+  createMemoryHistory,
+} from 'vue-router'
 
 export function createRouter() {
   return _createRouter({
-    history: import.meta.env.SSR ? createMemoryHistory() : createWebHistory(import.meta.env.BASE_URL),
+    history: import.meta.env.SSR
+      ? createMemoryHistory()
+      : createWebHistory(import.meta.env.BASE_URL),
+
+    scrollBehavior(to, from, savedPosition) {
+      if (savedPosition) {
+        return savedPosition
+      }
+
+      return { top: 0 }
+    },
+
     routes: [
       {
         path: '/',

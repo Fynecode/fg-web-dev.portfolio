@@ -10,7 +10,6 @@
           <thead>
             <tr class="text-left text-white/70 border-b border-white/10">
               <th class="py-3 px-3">Title</th>
-              <th class="py-3 px-3">Company</th>
               <th class="py-3 px-3">Status</th>
               <th class="py-3 px-3">Created</th>
               <th class="py-3 px-3">Actions</th>
@@ -23,7 +22,6 @@
               class="border-b border-white/5 hover:bg-white/5 transition"
             >
               <td class="py-3 px-3 font-semibold">{{ project.title }}</td>
-              <td class="py-3 px-3">{{ project.company || '-' }}</td>
               <td class="py-3 px-3 capitalize">{{ project.status }}</td>
               <td class="py-3 px-3">{{ formatDate(project.createdAt) }}</td>
               <td class="py-3 px-3">

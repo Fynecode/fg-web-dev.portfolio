@@ -1,5 +1,5 @@
 <script setup>
-import { Facebook, Globe, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-vue-next'
+import { Globe, Mail, MapPin, Phone} from 'lucide-vue-next'
 import ContactForm from '@/components/contact.form.vue'
 import Footer from './Footer.vue'
 import navbar from '@/components/navbar.vue'
@@ -12,7 +12,7 @@ const contactDetails = [
   { icon: Phone, label: '+264 81 737 6386', href: 'tel:+264817376386' },
   { icon: Mail, label: 'hello@fynecode.dev', href: 'mailto:hello@fynecode.dev' },
   { icon: Globe, label: 'fynecode.dev', href: '/' },
-  { icon: MapPin, label: 'Tsumeb, Namibia' },
+  { icon: MapPin, label: 'Tsumeb, Namibia, Ndilimani Cultural Troupe Erf 1190 office no.3' },
 ]
 
 const nextSteps = [
@@ -85,16 +85,10 @@ const nextSteps = [
             <div class="map-dots absolute inset-0"></div>
             <div class="relative z-10 flex flex-col items-center gap-3 text-sm font-semibold">
               <MapPin class="size-12 text-[#8a3fe0]" stroke-width="1.7" />
-              <span>Tsumeb, Namibia</span>
+              <span class="text-center w-1/2">Tsumeb, Namibia, Ndilimani Cultural Troupe Erf 1190 office no.3</span>
             </div>
           </div>
-
-          <div class="flex gap-3">
-            <a href="#" aria-label="LinkedIn" class="social-link"><Linkedin size="18" /></a>
-            <a href="#" aria-label="Facebook" class="social-link"><Facebook size="18" /></a>
-            <a href="#" aria-label="Twitter" class="social-link"><Twitter size="18" /></a>
-            <a href="#" aria-label="Instagram" class="social-link"><Instagram size="18" /></a>
-          </div>
+          
         </aside>
       </div>
     </section>

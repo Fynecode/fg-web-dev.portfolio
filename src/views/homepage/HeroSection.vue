@@ -16,14 +16,14 @@ import HeroCubeArt from './HeroCubeArt.vue'
         id="hero-heading"
         class="max-w-4xl text-[clamp(2.1rem,4vw,3.3rem)] font-bold leading-[1.22] tracking-[-0.04em]"
       >
-        We start by understanding your business, then building the <span class="gradient1">right software</span> around it.
+         Websites & Business <span class="gradient1">Software</span>  Development <br />
         <span class="sr-only">by Fynecode Development</span>
       </h1>
 
-      <p class="mt-6 max-w-xl text-base leading-7 text-[#4a5573] sm:text-lg">We understand your business, then build the right digital solutions to help you grow.</p>
+      <p class="mt-6 max-w-xl text-base leading-7 text-[#4a5573] sm:text-lg">We build professional websites and custom software for businesses.</p>
 
       <div class="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center">
-        <router-link to="/contact" class="inline-flex items-center justify-center gap-2 rounded-full contact-btn px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(138,63,224,0.55)] transition-transform hover:-translate-y-0.5"><Phone :size="16" />Book a discovery call</router-link>
+        <router-link to="/contact" class="inline-flex items-center justify-center gap-2 rounded-full contact-btn px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(138,63,224,0.55)] transition-transform hover:-translate-y-0.5"><Phone :size="16" />Let's talk about your project</router-link>
         <router-link to="/projects" class="inline-flex items-center justify-center gap-2 rounded-full border border-[#e6e8f2] bg-white px-5 py-3 text-sm font-semibold text-[#101f3d] transition-transform hover:-translate-y-0.5">See our work <ArrowRight :size="17" /></router-link>
       </div>
       </div>
